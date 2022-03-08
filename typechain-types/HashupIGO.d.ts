@@ -91,7 +91,7 @@ export class HashupIGO extends BaseContract {
 
   functions: {
     getCartridgePrice(
-      cartridgeAddress: string,
+      _cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { price: BigNumber }>;
 
@@ -104,7 +104,7 @@ export class HashupIGO extends BaseContract {
   };
 
   getCartridgePrice(
-    cartridgeAddress: string,
+    _cartridgeAddress: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -117,7 +117,7 @@ export class HashupIGO extends BaseContract {
 
   callStatic: {
     getCartridgePrice(
-      cartridgeAddress: string,
+      _cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -133,7 +133,7 @@ export class HashupIGO extends BaseContract {
 
   estimateGas: {
     getCartridgePrice(
-      cartridgeAddress: string,
+      _cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -147,7 +147,7 @@ export class HashupIGO extends BaseContract {
 
   populateTransaction: {
     getCartridgePrice(
-      cartridgeAddress: string,
+      _cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
