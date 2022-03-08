@@ -1,7 +1,8 @@
 pragma solidity ^0.8;
 
 import "hardhat/console.sol";
-import "./ICartridge.sol";
+import "./Cartridge.sol";
+import "./IERC20.sol";
 
 contract HashupIGO {
     struct PaymentMethod {
@@ -9,22 +10,32 @@ contract HashupIGO {
         uint256 price;
     }
 
-    //cartridge address to payment data
+    mapping(address => uint256) private raisedAmount;
     mapping(address => PaymentMethod) private cartridgeSales;
 
     modifier isCartridgeCreator(address _cartridgeAddress) {
-        require(msg.sender == ICartridge(_cartridgeAddress).creator());
+        require(
+            msg.sender == Cartridge(_cartridgeAddress).creator(),
+            "HashupIGO: Must be Cartridge creator."
+        );
         _;
     }
 
     function setCartridgeForSale(
-        address cartridgeAddress,
-        address paymentTokenAddress,
-        uint256 price
-    ) public {
-        cartridgeSales[cartridgeAddress] = PaymentMethod(
-            paymentTokenAddress,
-            price
+        address _cartridgeAddress,
+        address _paymentTokenAddress,
+        uint256 _price,
+        uint256 _amount
+    ) public isCartridgeCreator(_cartridgeAddress) {
+        Cartridge(_cartridgeAddress).transferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
+
+        cartridgeSales[_cartridgeAddress] = PaymentMethod(
+            _paymentTokenAddress,
+            _price
         );
     }
 
@@ -34,5 +45,71 @@ contract HashupIGO {
         returns (uint256 price)
     {
         return cartridgeSales[_cartridgeAddress].price;
+    }
+
+    function getPaymentToken(address _cartridgeAddress)
+        public
+        view
+        returns (address paymentToken)
+    {
+        return cartridgeSales[_cartridgeAddress].tokenAddress;
+    }
+
+    function buyCartridge(address _cartridgeAddress, uint256 _amount) public {
+        IERC20 paymentTokenContract = IERC20(
+            getPaymentToken(_cartridgeAddress)
+        );
+        Cartridge cartridgeContract = Cartridge(_cartridgeAddress);
+
+        uint256 totalPrice = getCartridgePrice(_cartridgeAddress) * _amount;
+
+        console.log(
+            "Allowance is",
+            paymentTokenContract.allowance(msg.sender, address(this))
+        );
+        console.log("Price is", totalPrice / _amount);
+        console.log("Amount bought is", _amount);
+        console.log("Needed allowance is", (totalPrice / _amount) * _amount);
+
+        console.log(
+            "Token balance",
+            paymentTokenContract.balanceOf(msg.sender)
+        );
+
+        console.log(
+            "Creator token balance",
+            paymentTokenContract.balanceOf(cartridgeContract.creator())
+        );
+
+        console.log(
+            "IGO Contract Cartridge Balance is",
+            cartridgeContract.balanceOf(address(this))
+        );
+
+        cartridgeContract.transfer(msg.sender, _amount);
+
+        paymentTokenContract.transferFrom(
+            (msg.sender),
+            cartridgeContract.creator(),
+            totalPrice
+        );
+
+        console.log(
+            "Allowance after selling is",
+            paymentTokenContract.allowance(msg.sender, address(this))
+        );
+        console.log(
+            "Token balance after selling is",
+            paymentTokenContract.balanceOf(msg.sender)
+        );
+        console.log(
+            "Creator token balance after selling is",
+            paymentTokenContract.balanceOf(cartridgeContract.creator())
+        );
+
+        console.log(
+            "IGO Contract Cartridge Balance after selling is",
+            cartridgeContract.balanceOf(address(this))
+        );
     }
 }

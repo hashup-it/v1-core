@@ -13,6 +13,10 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "Cartridge",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Cartridge__factory>;
+    getContractFactory(
       name: "GoldCartridgeTokenV0",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GoldCartridgeTokenV0__factory>;
@@ -24,7 +28,20 @@ declare module "hardhat/types/runtime" {
       name: "ICartridge",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ICartridge__factory>;
+    getContractFactory(
+      name: "IERC20",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20__factory>;
+    getContractFactory(
+      name: "USDTest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.USDTest__factory>;
 
+    getContractAt(
+      name: "Cartridge",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Cartridge>;
     getContractAt(
       name: "GoldCartridgeTokenV0",
       address: string,
@@ -40,6 +57,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ICartridge>;
+    getContractAt(
+      name: "IERC20",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20>;
+    getContractAt(
+      name: "USDTest",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.USDTest>;
 
     // default types
     getContractFactory(

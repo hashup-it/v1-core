@@ -1,8 +1,8 @@
 pragma solidity ^0.8;
 
-import "./ICartridge.sol";
+import "./Cartridge.sol";
 
-contract GoldCartridgeTokenV0 is ICartridge {
+contract GoldCartridgeTokenV0 is Cartridge {
     uint256 private constant MAX_UINT256 = 2**256 - 1;
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public allowed;
