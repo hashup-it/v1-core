@@ -1,13 +1,12 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
-
 import { HashupIGO__factory } from "../typechain-types/factories/HashupIGO__factory";
 import { HashupIGO } from "../typechain-types/HashupIGO";
 import { GoldCartridgeTokenV0 } from "../typechain-types/GoldCartridgeTokenV0";
 import { GoldCartridgeTokenV0__factory } from "../typechain-types/factories/GoldCartridgeTokenV0__factory";
 import { USDTest__factory } from "../typechain-types/factories/USDTest__factory";
 import { USDTest } from "../typechain-types/USDTest";
+import { ethers } from "hardhat";
 
 const CARTRIDGE_CONFIG = {
     initialAmount: 10000,
@@ -25,20 +24,21 @@ const USDTEST_CONFIG = {
     tokenSymbol: "USDT",
 };
 
-describe("HashupIGO", async () => {
-    let owner: SignerWithAddress;
-    let userOne: SignerWithAddress;
-    let userTwo: SignerWithAddress;
+let owner: SignerWithAddress;
+let userOne: SignerWithAddress;
+let userTwo: SignerWithAddress;
 
-    let GoldCartridgeFactory: GoldCartridgeTokenV0__factory;
+let GoldCartridgeFactory: GoldCartridgeTokenV0__factory;
+let HashupIGOFactory: HashupIGO__factory;
+let USDTestFactory: USDTest__factory;
+
+describe("HashupIGO", async () => {
     let goldCartridge: GoldCartridgeTokenV0;
     let cartridgeAddress: string;
 
-    let HashupIGOFactory: HashupIGO__factory;
     let hashupIGO: HashupIGO;
     let igoAddress: string;
 
-    let USDTestFactory: USDTest__factory;
     let usdTest: USDTest;
     let tokenAddress: string;
 
@@ -58,7 +58,6 @@ describe("HashupIGO", async () => {
             CARTRIDGE_CONFIG.initialAmount,
             CARTRIDGE_CONFIG.tokenName,
             CARTRIDGE_CONFIG.tokenSymbol,
-            CARTRIDGE_CONFIG.cartridgeType,
             CARTRIDGE_CONFIG.feeForCreator,
             CARTRIDGE_CONFIG.metadataUrl,
             igoAddress
@@ -94,12 +93,7 @@ describe("HashupIGO", async () => {
             await expect(
                 hashupIGO
                     .connect(userOne)
-                    .setCartridgeForSale(
-                        cartridgeAddress,
-                        tokenAddress,
-                        1,
-                        presaleAmount
-                    )
+                    .setCartridgeForSale(cartridgeAddress, tokenAddress, 1, presaleAmount)
             ).to.be.reverted;
         });
 
@@ -139,7 +133,7 @@ describe("HashupIGO", async () => {
             await expect(hashupIGO.connect(userOne).buyCartridge(cartridgeAddress, salePrice)).to
                 .be.reverted;
         });
-        
+
         it("should revert if payment token balance is insufficient", async () => {
             await usdTest.connect(userTwo).approve(igoAddress, salePrice * amountBought);
 
@@ -155,8 +149,59 @@ describe("HashupIGO", async () => {
             await hashupIGO.connect(userOne).buyCartridge(cartridgeAddress, amountBought);
             const creatorFinalBalance = await usdTest.balanceOf(owner.address);
 
-            expect(creatorFinalBalance).to.be.equal( Number(creatorInitialBalance) + totalPrice)
+            expect(creatorFinalBalance).to.be.equal(Number(creatorInitialBalance) + totalPrice);
+        });
+    });
+});
+
+describe("Cartridge", () => {
+    let goldCartridge: GoldCartridgeTokenV0;
+    let cartridgeAddress: string;
+    let igoAddress = ethers.Wallet.createRandom().address;
+
+    describe("Golden cartrdige", () => {
+        beforeEach(async () => {
+            GoldCartridgeFactory = (await ethers.getContractFactory(
+                "GoldCartridgeTokenV0"
+            )) as GoldCartridgeTokenV0__factory;
+            goldCartridge = await GoldCartridgeFactory.deploy(
+                CARTRIDGE_CONFIG.initialAmount,
+                CARTRIDGE_CONFIG.tokenName,
+                CARTRIDGE_CONFIG.tokenSymbol,
+                CARTRIDGE_CONFIG.feeForCreator,
+                CARTRIDGE_CONFIG.metadataUrl,
+                igoAddress
+            );
+
+            await goldCartridge.deployed();
+            cartridgeAddress = goldCartridge.address;
         });
 
+        describe("constructor()", () => {
+            it("should set initial amount correctly", async () => {
+                const initialAmount = await goldCartridge.totalSupply();
+                expect(initialAmount).to.be.equal(CARTRIDGE_CONFIG.initialAmount);
+            });
+
+            it("should send all cartridges to creator on creation", async () => {
+                const creatorBalance = await goldCartridge.balanceOf(owner.address);
+                expect(creatorBalance).to.be.equal(CARTRIDGE_CONFIG.initialAmount);
+            });
+
+            it("should set game name correctly", async () => {
+                const gameName = await goldCartridge.name();
+                expect(gameName).to.be.equal(CARTRIDGE_CONFIG.tokenName);
+            });
+
+            it("should set game symbol correctly", async () => {
+                const gameSymbol = await goldCartridge.symbol();
+                expect(gameSymbol).to.be.equal(CARTRIDGE_CONFIG.tokenSymbol);
+            });
+
+            it("should set creator correctly", async () => {
+              const creator = await goldCartridge.creator();
+              expect(creator).to.be.equal(owner.address);
+          });
+        });
     });
 });

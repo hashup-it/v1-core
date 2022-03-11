@@ -17,6 +17,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Cartridge__factory>;
     getContractFactory(
+      name: "CartridgeOwnable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CartridgeOwnable__factory>;
+    getContractFactory(
       name: "GoldCartridgeTokenV0",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GoldCartridgeTokenV0__factory>;
@@ -24,10 +28,6 @@ declare module "hardhat/types/runtime" {
       name: "HashupIGO",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.HashupIGO__factory>;
-    getContractFactory(
-      name: "ICartridge",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ICartridge__factory>;
     getContractFactory(
       name: "IERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -43,6 +43,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Cartridge>;
     getContractAt(
+      name: "CartridgeOwnable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CartridgeOwnable>;
+    getContractAt(
       name: "GoldCartridgeTokenV0",
       address: string,
       signer?: ethers.Signer
@@ -52,11 +57,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.HashupIGO>;
-    getContractAt(
-      name: "ICartridge",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ICartridge>;
     getContractAt(
       name: "IERC20",
       address: string,

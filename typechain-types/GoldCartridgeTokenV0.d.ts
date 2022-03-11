@@ -22,15 +22,14 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
   functions: {
     "HashUpWallet()": FunctionFragment;
-    "_creator()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "allowed(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "balances(address)": FunctionFragment;
-    "cartridgeType()": FunctionFragment;
     "creator()": FunctionFragment;
     "decimals()": FunctionFragment;
+    "feeDecimals()": FunctionFragment;
     "feeForCreator()": FunctionFragment;
     "feesCounter()": FunctionFragment;
     "getAmountAfterFees(uint256,address)": FunctionFragment;
@@ -48,7 +47,6 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
     functionFragment: "HashUpWallet",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "_creator", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "allowance",
     values: [string, string]
@@ -63,12 +61,12 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "balances", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "cartridgeType",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "creator", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "feeDecimals",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "feeForCreator",
     values?: undefined
@@ -103,18 +101,17 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
     functionFragment: "HashUpWallet",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "_creator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowed", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balances", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "cartridgeType",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "feeDecimals",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "feeForCreator",
     data: BytesLike
@@ -216,8 +213,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
   functions: {
     HashUpWallet(overrides?: CallOverrides): Promise<[string]>;
 
-    _creator(overrides?: CallOverrides): Promise<[string]>;
-
     allowance(
       _owner: string,
       _spender: string,
@@ -243,11 +238,11 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    cartridgeType(overrides?: CallOverrides): Promise<[number]>;
-
     creator(overrides?: CallOverrides): Promise<[string]>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<[number]>;
 
     feeForCreator(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -290,8 +285,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
   HashUpWallet(overrides?: CallOverrides): Promise<string>;
 
-  _creator(overrides?: CallOverrides): Promise<string>;
-
   allowance(
     _owner: string,
     _spender: string,
@@ -314,11 +307,11 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
   balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  cartridgeType(overrides?: CallOverrides): Promise<number>;
-
   creator(overrides?: CallOverrides): Promise<string>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
+
+  feeDecimals(overrides?: CallOverrides): Promise<number>;
 
   feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -361,8 +354,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
   callStatic: {
     HashUpWallet(overrides?: CallOverrides): Promise<string>;
 
-    _creator(overrides?: CallOverrides): Promise<string>;
-
     allowance(
       _owner: string,
       _spender: string,
@@ -385,11 +376,11 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    cartridgeType(overrides?: CallOverrides): Promise<number>;
-
     creator(overrides?: CallOverrides): Promise<string>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<number>;
 
     feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -471,8 +462,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
   estimateGas: {
     HashUpWallet(overrides?: CallOverrides): Promise<BigNumber>;
 
-    _creator(overrides?: CallOverrides): Promise<BigNumber>;
-
     allowance(
       _owner: string,
       _spender: string,
@@ -495,11 +484,11 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    cartridgeType(overrides?: CallOverrides): Promise<BigNumber>;
-
     creator(overrides?: CallOverrides): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -543,8 +532,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
   populateTransaction: {
     HashUpWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    _creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     allowance(
       _owner: string,
       _spender: string,
@@ -573,11 +560,11 @@ export class GoldCartridgeTokenV0 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    cartridgeType(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     feeForCreator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

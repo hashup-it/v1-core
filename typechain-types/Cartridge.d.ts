@@ -21,18 +21,37 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface CartridgeInterface extends ethers.utils.Interface {
   functions: {
+    "HashUpWallet()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
+    "allowed(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "balances(address)": FunctionFragment;
     "creator()": FunctionFragment;
+    "decimals()": FunctionFragment;
+    "feeDecimals()": FunctionFragment;
+    "feeForCreator()": FunctionFragment;
     "getAmountAfterFees(uint256,address)": FunctionFragment;
+    "hashUpIGO()": FunctionFragment;
+    "metadata()": FunctionFragment;
+    "name()": FunctionFragment;
     "setMetadata(string)": FunctionFragment;
+    "symbol()": FunctionFragment;
+    "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
+    functionFragment: "HashUpWallet",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "allowance",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "allowed",
     values: [string, string]
   ): string;
   encodeFunctionData(
@@ -40,12 +59,30 @@ interface CartridgeInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(functionFragment: "balances", values: [string]): string;
   encodeFunctionData(functionFragment: "creator", values?: undefined): string;
+  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "feeDecimals",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "feeForCreator",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getAmountAfterFees",
     values: [BigNumberish, string]
   ): string;
+  encodeFunctionData(functionFragment: "hashUpIGO", values?: undefined): string;
+  encodeFunctionData(functionFragment: "metadata", values?: undefined): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "setMetadata", values: [string]): string;
+  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "transfer",
     values: [string, BigNumberish]
@@ -55,16 +92,39 @@ interface CartridgeInterface extends ethers.utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "HashUpWallet",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "allowed", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "balances", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "feeDecimals",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "feeForCreator",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getAmountAfterFees",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "hashUpIGO", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "metadata", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMetadata",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
@@ -142,11 +202,19 @@ export class Cartridge extends BaseContract {
   interface: CartridgeInterface;
 
   functions: {
+    HashUpWallet(overrides?: CallOverrides): Promise<[string]>;
+
     allowance(
       _owner: string,
       _spender: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { remaining: BigNumber }>;
+
+    allowed(
+      arg0: string,
+      arg1: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     approve(
       _spender: string,
@@ -159,7 +227,15 @@ export class Cartridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { balance: BigNumber }>;
 
+    balances(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
     creator(overrides?: CallOverrides): Promise<[string]>;
+
+    decimals(overrides?: CallOverrides): Promise<[number]>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<[number]>;
+
+    feeForCreator(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getAmountAfterFees(
       _value: BigNumberish,
@@ -167,10 +243,20 @@ export class Cartridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
+    hashUpIGO(overrides?: CallOverrides): Promise<[string]>;
+
+    metadata(overrides?: CallOverrides): Promise<[string]>;
+
+    name(overrides?: CallOverrides): Promise<[string]>;
+
     setMetadata(
       _metadataURL: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<[string]>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transfer(
       _to: string,
@@ -186,9 +272,17 @@ export class Cartridge extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  HashUpWallet(overrides?: CallOverrides): Promise<string>;
+
   allowance(
     _owner: string,
     _spender: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  allowed(
+    arg0: string,
+    arg1: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -200,7 +294,15 @@ export class Cartridge extends BaseContract {
 
   balanceOf(_owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
   creator(overrides?: CallOverrides): Promise<string>;
+
+  decimals(overrides?: CallOverrides): Promise<number>;
+
+  feeDecimals(overrides?: CallOverrides): Promise<number>;
+
+  feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
   getAmountAfterFees(
     _value: BigNumberish,
@@ -208,10 +310,20 @@ export class Cartridge extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber]>;
 
+  hashUpIGO(overrides?: CallOverrides): Promise<string>;
+
+  metadata(overrides?: CallOverrides): Promise<string>;
+
+  name(overrides?: CallOverrides): Promise<string>;
+
   setMetadata(
     _metadataURL: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  symbol(overrides?: CallOverrides): Promise<string>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transfer(
     _to: string,
@@ -227,9 +339,17 @@ export class Cartridge extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    HashUpWallet(overrides?: CallOverrides): Promise<string>;
+
     allowance(
       _owner: string,
       _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    allowed(
+      arg0: string,
+      arg1: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -241,7 +361,15 @@ export class Cartridge extends BaseContract {
 
     balanceOf(_owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     creator(overrides?: CallOverrides): Promise<string>;
+
+    decimals(overrides?: CallOverrides): Promise<number>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<number>;
+
+    feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAmountAfterFees(
       _value: BigNumberish,
@@ -249,10 +377,20 @@ export class Cartridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
+    hashUpIGO(overrides?: CallOverrides): Promise<string>;
+
+    metadata(overrides?: CallOverrides): Promise<string>;
+
+    name(overrides?: CallOverrides): Promise<string>;
+
     setMetadata(
       _metadataURL: string,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    symbol(overrides?: CallOverrides): Promise<string>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       _to: string,
@@ -307,9 +445,17 @@ export class Cartridge extends BaseContract {
   };
 
   estimateGas: {
+    HashUpWallet(overrides?: CallOverrides): Promise<BigNumber>;
+
     allowance(
       _owner: string,
       _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    allowed(
+      arg0: string,
+      arg1: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -321,7 +467,15 @@ export class Cartridge extends BaseContract {
 
     balanceOf(_owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     creator(overrides?: CallOverrides): Promise<BigNumber>;
+
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAmountAfterFees(
       _value: BigNumberish,
@@ -329,10 +483,20 @@ export class Cartridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    hashUpIGO(overrides?: CallOverrides): Promise<BigNumber>;
+
+    metadata(overrides?: CallOverrides): Promise<BigNumber>;
+
+    name(overrides?: CallOverrides): Promise<BigNumber>;
+
     setMetadata(
       _metadataURL: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    symbol(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       _to: string,
@@ -349,9 +513,17 @@ export class Cartridge extends BaseContract {
   };
 
   populateTransaction: {
+    HashUpWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     allowance(
       _owner: string,
       _spender: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    allowed(
+      arg0: string,
+      arg1: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -366,7 +538,18 @@ export class Cartridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    balances(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feeForCreator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getAmountAfterFees(
       _value: BigNumberish,
@@ -374,10 +557,20 @@ export class Cartridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    hashUpIGO(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    metadata(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     setMetadata(
       _metadataURL: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transfer(
       _to: string,
