@@ -31,6 +31,7 @@ interface CartridgeInterface extends ethers.utils.Interface {
     "decimals()": FunctionFragment;
     "feeDecimals()": FunctionFragment;
     "feeForCreator()": FunctionFragment;
+    "feesCounter()": FunctionFragment;
     "getAmountAfterFees(uint256,address)": FunctionFragment;
     "hashUpIGO()": FunctionFragment;
     "metadata()": FunctionFragment;
@@ -68,6 +69,10 @@ interface CartridgeInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "feeForCreator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "feesCounter",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -109,6 +114,10 @@ interface CartridgeInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "feeForCreator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "feesCounter",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -237,6 +246,8 @@ export class Cartridge extends BaseContract {
 
     feeForCreator(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    feesCounter(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     getAmountAfterFees(
       _value: BigNumberish,
       _from: string,
@@ -304,6 +315,8 @@ export class Cartridge extends BaseContract {
 
   feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
+  feesCounter(overrides?: CallOverrides): Promise<BigNumber>;
+
   getAmountAfterFees(
     _value: BigNumberish,
     _from: string,
@@ -370,6 +383,8 @@ export class Cartridge extends BaseContract {
     feeDecimals(overrides?: CallOverrides): Promise<number>;
 
     feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
+
+    feesCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAmountAfterFees(
       _value: BigNumberish,
@@ -477,6 +492,8 @@ export class Cartridge extends BaseContract {
 
     feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
+    feesCounter(overrides?: CallOverrides): Promise<BigNumber>;
+
     getAmountAfterFees(
       _value: BigNumberish,
       _from: string,
@@ -550,6 +567,8 @@ export class Cartridge extends BaseContract {
     feeDecimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     feeForCreator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feesCounter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getAmountAfterFees(
       _value: BigNumberish,

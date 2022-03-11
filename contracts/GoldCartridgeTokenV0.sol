@@ -5,7 +5,9 @@ import "hardhat/console.sol";
 
 contract GoldCartridgeTokenV0 is Cartridge {
 
-    uint256 public feesCounter;
+
+    uint256 internal constant maxSupply = 133700 * 10**decimals;
+    uint256 internal constant maxFee = 5 * 10**feeDecimals;
 
     constructor(
         uint256 _initialAmount,
@@ -15,9 +17,6 @@ contract GoldCartridgeTokenV0 is Cartridge {
         string memory _metadataUrl,
         address _hashUpIGO
     ) {
-        maxSupply = 133700 * 10**decimals; // Max supply of a Gold Cartridge [133700.00]
-        maxFee = 5 * 10**feeDecimals;
-
         require(_initialAmount <= maxSupply); 
         require((_feeForCreator > 0) && (_feeForCreator < maxFee)); // Pretends the overflow the creators fee
 
@@ -79,9 +78,7 @@ contract GoldCartridgeTokenV0 is Cartridge {
         feesCounter += feesAmmount;
         balances[creator()] += feesAmmount;
 
-        if (allowances < MAX_UINT256) {
-            allowed[_from][msg.sender] -= _value;
-        }
+
         emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
         return true;
     }

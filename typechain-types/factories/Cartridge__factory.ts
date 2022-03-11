@@ -233,6 +233,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "feesCounter",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -312,7 +325,7 @@ const _abi = [
     outputs: [
       {
         internalType: "string",
-        name: "",
+        name: "metadata",
         type: "string",
       },
     ],

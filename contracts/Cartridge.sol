@@ -6,39 +6,32 @@ import "hardhat/console.sol";
 
 
 abstract contract Cartridge is CartridgeOwnable, IERC20 {
-    uint256 internal maxSupply;
-    uint256 internal maxFee;
 
-    uint256 internal constant MAX_UINT256 = 2**256 - 1;
-    address public HashUpWallet = 0x5E798CE8e53a3FE16842C233e8802Dc3b09A8451;
-
-    string public name; //fancy name: eg GameX
-    uint8 public constant decimals = 2; //How many decimals to show.
-    uint8 public constant feeDecimals = 1; //How many decimals to show.
-    string public symbol; //An identifier: eg GMX
-
-    uint256 public feeForCreator;
+    address public constant HashUpWallet = 0x5E798CE8e53a3FE16842C233e8802Dc3b09A8451;
     address public hashUpIGO;
+   
+    uint8 public constant decimals = 2;
+    uint8 public constant feeDecimals = 1; 
+
+    string public name;
+    string public symbol; 
+    string public metadata;
+
+    uint256 public feesCounter;
+    uint256 public feeForCreator;
 
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public allowed;
     uint256 public totalSupply;
 
-
-    string public metadata;
-
-
-
     function setMetadata(string memory _metadataURL)
         public
         onlyCreator
-        returns (string memory)
+        returns (string memory metadata)
     {
         metadata = _metadataURL;
         return _metadataURL;
     }
-
-
 
     function balanceOf(address _owner)
         public

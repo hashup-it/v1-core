@@ -202,6 +202,11 @@ describe("Cartridge", () => {
               const creator = await goldCartridge.creator();
               expect(creator).to.be.equal(owner.address);
           });
+          describe("approve()", async () => {
+            it("should revert if its bigger than max uint256", async () => {
+              await expect(goldCartridge.approve(userTwo.address, "115792089237316195423570985008687907853269984665640564039457584007913129639936")).to.be.reverted;
+            })
+          })
         });
     });
 });
