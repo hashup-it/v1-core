@@ -1,9 +1,12 @@
+
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { HashupIGO__factory } from "../typechain-types/factories/HashupIGO__factory";
 import { HashupIGO } from "../typechain-types/HashupIGO";
 import { GoldCartridgeTokenV0 } from "../typechain-types/GoldCartridgeTokenV0";
 import { GoldCartridgeTokenV0__factory } from "../typechain-types/factories/GoldCartridgeTokenV0__factory";
+import { RedCartridgeTokenV0 } from "../typechain-types/RedCartridgeTokenV0";
+import { RedCartridgeTokenV0__factory } from "../typechain-types/factories/RedCartridgeTokenV0__factory";
 import { USDTest__factory } from "../typechain-types/factories/USDTest__factory";
 import { USDTest } from "../typechain-types/USDTest";
 import { ethers } from "hardhat";
@@ -32,7 +35,12 @@ let GoldCartridgeFactory: GoldCartridgeTokenV0__factory;
 let HashupIGOFactory: HashupIGO__factory;
 let USDTestFactory: USDTest__factory;
 
+require('./red')
+
 describe("HashupIGO", async () => {
+
+
+    
     let goldCartridge: GoldCartridgeTokenV0;
     let cartridgeAddress: string;
 
@@ -96,6 +104,14 @@ describe("HashupIGO", async () => {
                     .setCartridgeForSale(cartridgeAddress, tokenAddress, 1, presaleAmount)
             ).to.be.reverted;
         });
+
+        it("should send cartridges to igo", async () => {
+          await expect(
+              hashupIGO
+                  .connect(userOne)
+                  .setCartridgeForSale(cartridgeAddress, tokenAddress, 1, presaleAmount)
+          ).to.be.reverted;
+      });
 
         it("should add game to sale mapping", async () => {
             const passedPrice = 10;

@@ -182,6 +182,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "color",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "creator",
     outputs: [
       {
@@ -325,7 +338,7 @@ const _abi = [
     outputs: [
       {
         internalType: "string",
-        name: "metadata",
+        name: "newMetadata",
         type: "string",
       },
     ],

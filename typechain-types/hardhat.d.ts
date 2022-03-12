@@ -33,6 +33,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
+      name: "RedCartridgeTokenV0",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.RedCartridgeTokenV0__factory>;
+    getContractFactory(
       name: "USDTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.USDTest__factory>;
@@ -62,6 +66,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
+    getContractAt(
+      name: "RedCartridgeTokenV0",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.RedCartridgeTokenV0>;
     getContractAt(
       name: "USDTest",
       address: string,

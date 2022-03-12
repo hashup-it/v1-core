@@ -59,9 +59,9 @@ contract USDTest is IERC20 {
         );
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowances < MAX_UINT256) {
+
             allowed[_from][msg.sender] -= _value;
-        }
+
         emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
         return true;
     }

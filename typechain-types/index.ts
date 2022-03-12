@@ -6,6 +6,7 @@ export type { CartridgeOwnable } from "./CartridgeOwnable";
 export type { GoldCartridgeTokenV0 } from "./GoldCartridgeTokenV0";
 export type { HashupIGO } from "./HashupIGO";
 export type { IERC20 } from "./IERC20";
+export type { RedCartridgeTokenV0 } from "./RedCartridgeTokenV0";
 export type { USDTest } from "./USDTest";
 
 export { Cartridge__factory } from "./factories/Cartridge__factory";
@@ -13,4 +14,5 @@ export { CartridgeOwnable__factory } from "./factories/CartridgeOwnable__factory
 export { GoldCartridgeTokenV0__factory } from "./factories/GoldCartridgeTokenV0__factory";
 export { HashupIGO__factory } from "./factories/HashupIGO__factory";
 export { IERC20__factory } from "./factories/IERC20__factory";
+export { RedCartridgeTokenV0__factory } from "./factories/RedCartridgeTokenV0__factory";
 export { USDTest__factory } from "./factories/USDTest__factory";

@@ -19,7 +19,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
+interface RedCartridgeTokenV0Interface extends ethers.utils.Interface {
   functions: {
     "HashUpWallet()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
@@ -170,7 +170,7 @@ export type TransferEvent = TypedEvent<
   }
 >;
 
-export class GoldCartridgeTokenV0 extends BaseContract {
+export class RedCartridgeTokenV0 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -211,7 +211,7 @@ export class GoldCartridgeTokenV0 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: GoldCartridgeTokenV0Interface;
+  interface: RedCartridgeTokenV0Interface;
 
   functions: {
     HashUpWallet(overrides?: CallOverrides): Promise<[string]>;

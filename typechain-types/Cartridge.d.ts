@@ -27,6 +27,7 @@ interface CartridgeInterface extends ethers.utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "balances(address)": FunctionFragment;
+    "color()": FunctionFragment;
     "creator()": FunctionFragment;
     "decimals()": FunctionFragment;
     "feeDecimals()": FunctionFragment;
@@ -61,6 +62,7 @@ interface CartridgeInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "balances", values: [string]): string;
+  encodeFunctionData(functionFragment: "color", values?: undefined): string;
   encodeFunctionData(functionFragment: "creator", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
@@ -106,6 +108,7 @@ interface CartridgeInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balances", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "color", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
@@ -238,6 +241,8 @@ export class Cartridge extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    color(overrides?: CallOverrides): Promise<[string]>;
+
     creator(overrides?: CallOverrides): Promise<[string]>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
@@ -307,6 +312,8 @@ export class Cartridge extends BaseContract {
 
   balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  color(overrides?: CallOverrides): Promise<string>;
+
   creator(overrides?: CallOverrides): Promise<string>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
@@ -375,6 +382,8 @@ export class Cartridge extends BaseContract {
     balanceOf(_owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    color(overrides?: CallOverrides): Promise<string>;
 
     creator(overrides?: CallOverrides): Promise<string>;
 
@@ -484,6 +493,8 @@ export class Cartridge extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    color(overrides?: CallOverrides): Promise<BigNumber>;
+
     creator(overrides?: CallOverrides): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
@@ -559,6 +570,8 @@ export class Cartridge extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    color(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
