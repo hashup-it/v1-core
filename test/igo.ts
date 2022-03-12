@@ -102,11 +102,9 @@ describe("HashupIGO", async () => {
         });
 
         it("should send cartridges to igo without fee", async () => {
-            await hashupIGO
-                .setCartridgeForSale(cartridgeAddress, tokenAddress, 1, presaleAmount);
+            await hashupIGO.setCartridgeForSale(cartridgeAddress, tokenAddress, 1, presaleAmount);
 
             expect(await goldCartridge.balanceOf(igoAddress)).to.be.equal(presaleAmount);
-
         });
 
         it("should add game to sale mapping", async () => {
@@ -165,4 +163,3 @@ describe("HashupIGO", async () => {
         });
     });
 });
-

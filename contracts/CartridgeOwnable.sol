@@ -12,7 +12,10 @@ abstract contract CartridgeOwnable {
     }
 
     modifier onlyCreator() {
-        require(msg.sender == _creator, "CartrdigeOwnable: Caller is not creator");
+        require(
+            msg.sender == _creator,
+            "CartrdigeOwnable: Caller is not creator"
+        );
         _;
     }
 }

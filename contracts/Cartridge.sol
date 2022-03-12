@@ -78,8 +78,8 @@ abstract contract Cartridge is CartridgeOwnable, IERC20 {
 
     function transfer(address _to, uint256 _value)
         public
-        override
         virtual
+        override
         returns (bool success)
     {
         require(
@@ -96,7 +96,7 @@ abstract contract Cartridge is CartridgeOwnable, IERC20 {
         address _from,
         address _to,
         uint256 _value
-    ) public override virtual returns (bool success) {
+    ) public virtual override returns (bool success) {
         uint256 allowances = allowed[_from][msg.sender];
 
         require(

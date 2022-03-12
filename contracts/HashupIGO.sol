@@ -56,7 +56,6 @@ contract HashupIGO {
     }
 
     function buyCartridge(address _cartridgeAddress, uint256 _amount) public {
-
         IERC20 paymentTokenContract = IERC20(
             getPaymentToken(_cartridgeAddress)
         );
@@ -68,10 +67,10 @@ contract HashupIGO {
             "Allowance is",
             paymentTokenContract.allowance(msg.sender, address(this))
         );
-         console.log(
+        console.log(
             "Buyer cartridge balance is",
             cartridgeContract.balanceOf(msg.sender)
-         );
+        );
         console.log("Price is", totalPrice / _amount);
         console.log("Amount bought is", _amount);
         console.log("Needed allowance is", (totalPrice / _amount) * _amount);
@@ -91,11 +90,7 @@ contract HashupIGO {
             cartridgeContract.balanceOf(address(this))
         );
 
-
-
-        cartridgeContract.transfer(msg.sender ,_amount);
-
-
+        cartridgeContract.transfer(msg.sender, _amount);
 
         paymentTokenContract.transferFrom(
             (msg.sender),
@@ -120,9 +115,9 @@ contract HashupIGO {
             "IGO Contract Cartridge Balance after selling is",
             cartridgeContract.balanceOf(address(this))
         );
-          console.log(
+        console.log(
             "Buyer cartridge balance is",
             cartridgeContract.balanceOf(msg.sender)
-         );
+        );
     }
 }

@@ -40,18 +40,6 @@ describe("BlueCartrdigeTokenV0", async () => {
     });
 
     describe("constructor()", () => {
-        it("should revert if supply too high", async () => {
-            await expect(
-                cartridgeFactory.deploy(
-                    ethers.constants.MaxUint256.add(1),
-                    CARTRIDGE_CONFIG.name,
-                    CARTRIDGE_CONFIG.symbol,
-                    CARTRIDGE_CONFIG.fee,
-                    CARTRIDGE_CONFIG.metadata,
-                    CARTRIDGE_CONFIG.igo
-                )
-            ).to.be.reverted;
-        });
         it("should revert if fee too high", async () => {
             await expect(
                 cartridgeFactory.deploy(
@@ -143,7 +131,7 @@ describe("BlueCartrdigeTokenV0", async () => {
             const newFee = 115;
             await cartridgeContract.changeFee(newFee);
 
-            expect(await cartridgeContract.feeForCreator()).to.be.equal(newFee);
+            expect(await cartridgeContract.feeForCreator()).to.be.equal(newFee)
         });
         it("should revert if fee is higher than 100%", async () => {
             await expect(cartridgeContract.changeFee(1001)).to.be.reverted;

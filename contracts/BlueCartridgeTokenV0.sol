@@ -12,7 +12,6 @@ contract BlueCartridgeTokenV0 is Cartridge {
         string memory _metadataUrl,
         address _hashUpIGO
     ) {
-        require(_initialAmount <= type(uint256).max);
         require(
             (_feeForCreator > 0) && (_feeForCreator <= 100 * 10**feeDecimals)
         ); // Pretends the overflow the creators fee
@@ -44,8 +43,15 @@ contract BlueCartridgeTokenV0 is Cartridge {
         return _amount;
     }
 
-    function changeFee(uint256 _value) public onlyCreator returns (uint256 newFee) {
-        require(_value > 0 && (_value <= 100 * 10**feeDecimals), "Fee is lower than 0 or larger than 100");
+    function changeFee(uint256 _value)
+        public
+        onlyCreator
+        returns (uint256 newFee)
+    {
+        require(
+            _value > 0 && (_value <= 100 * 10**feeDecimals),
+            "Fee is lower than 0 or larger than 100"
+        );
         feeForCreator = _value;
         return _value;
     }

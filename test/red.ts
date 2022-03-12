@@ -110,14 +110,20 @@ describe("RedCartrdigeTokenV0", async () => {
         it("should set allowance correctly", async () => {
             const approvedAmount = 100;
             await cartridgeContract.approve(userTwo.address, approvedAmount);
-            expect(await cartridgeContract.allowance(creator.address, userTwo.address)).to.be.equal(approvedAmount);
-        })
+            expect(
+                await cartridgeContract.allowance(creator.address, userTwo.address)
+            ).to.be.equal(approvedAmount);
+        });
     });
     describe("transferFrom()", () => {
         it("should revert for regular user even if allowance is sufficient", async () => {
             const amountSent = 100;
             await cartridgeContract.approve(userOne.address, amountSent);
-            await expect(cartridgeContract.connect(userOne).transferFrom(creator.address, userOne.address, amountSent)).to.be.reverted;
+            await expect(
+                cartridgeContract
+                    .connect(userOne)
+                    .transferFrom(creator.address, userOne.address, amountSent)
+            ).to.be.reverted;
         });
         it("should transfer to recipient if creator gives approve to himself", async () => {
             const amountSent = 100;
@@ -128,14 +134,16 @@ describe("RedCartrdigeTokenV0", async () => {
         it("should revert if balance is unsufficient", async () => {
             const amountSent = 100000000001;
             await cartridgeContract.approve(creator.address, amountSent);
-            await expect(cartridgeContract.transferFrom(creator.address, userOne.address, amountSent)).to.be.reverted;
-
+            await expect(
+                cartridgeContract.transferFrom(creator.address, userOne.address, amountSent)
+            ).to.be.reverted;
         });
         it("should revert if allowance is unsufficient", async () => {
             const amountSent = 10000;
             await cartridgeContract.approve(creator.address, amountSent - 1);
-            await expect(cartridgeContract.transferFrom(creator.address, userOne.address, amountSent)).to.be.reverted;
-
+            await expect(
+                cartridgeContract.transferFrom(creator.address, userOne.address, amountSent)
+            ).to.be.reverted;
         });
     });
 });

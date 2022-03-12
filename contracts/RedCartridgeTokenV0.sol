@@ -13,7 +13,10 @@ contract RedCartridgeTokenV0 is Cartridge {
         string memory _metadataUrl,
         address _hashUpIGO
     ) {
-        require(_initialAmount <= maxSupply, "RedCartridgeToken: initial supply too high");
+        require(
+            _initialAmount <= maxSupply,
+            "RedCartridgeToken: initial supply too high"
+        );
 
         color = "red";
 
@@ -29,7 +32,10 @@ contract RedCartridgeTokenV0 is Cartridge {
     }
 
     modifier onlyCreatorOrIGO() {
-        require(msg.sender == creator() || msg.sender == hashUpIGO, "RedCartridge: can't transfer unless IGO or Creator");
+        require(
+            msg.sender == creator() || msg.sender == hashUpIGO,
+            "RedCartridge: can't transfer unless IGO or Creator"
+        );
         _;
     }
 
