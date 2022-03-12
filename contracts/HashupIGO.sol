@@ -33,8 +33,6 @@ contract HashupIGO {
             _amount
         );
 
-        console.log(Cartridge(_cartridgeAddress).balanceOf(address(this)));
-
         cartridgeSales[_cartridgeAddress] = PaymentMethod(
             _paymentTokenAddress,
             _price
@@ -70,6 +68,10 @@ contract HashupIGO {
             "Allowance is",
             paymentTokenContract.allowance(msg.sender, address(this))
         );
+         console.log(
+            "Buyer cartridge balance is",
+            cartridgeContract.balanceOf(msg.sender)
+         );
         console.log("Price is", totalPrice / _amount);
         console.log("Amount bought is", _amount);
         console.log("Needed allowance is", (totalPrice / _amount) * _amount);
@@ -118,5 +120,9 @@ contract HashupIGO {
             "IGO Contract Cartridge Balance after selling is",
             cartridgeContract.balanceOf(address(this))
         );
+          console.log(
+            "Buyer cartridge balance is",
+            cartridgeContract.balanceOf(msg.sender)
+         );
     }
 }

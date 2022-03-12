@@ -1,4 +1,3 @@
-
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { HashupIGO__factory } from "../typechain-types/factories/HashupIGO__factory";
@@ -35,12 +34,9 @@ let GoldCartridgeFactory: GoldCartridgeTokenV0__factory;
 let HashupIGOFactory: HashupIGO__factory;
 let USDTestFactory: USDTest__factory;
 
-require('./red')
+require("./red");
 
 describe("HashupIGO", async () => {
-
-
-    
     let goldCartridge: GoldCartridgeTokenV0;
     let cartridgeAddress: string;
 
@@ -105,13 +101,13 @@ describe("HashupIGO", async () => {
             ).to.be.reverted;
         });
 
-        it("should send cartridges to igo", async () => {
-          await expect(
-              hashupIGO
-                  .connect(userOne)
-                  .setCartridgeForSale(cartridgeAddress, tokenAddress, 1, presaleAmount)
-          ).to.be.reverted;
-      });
+        it("should send cartridges to igo without fee", async () => {
+            await hashupIGO
+                .setCartridgeForSale(cartridgeAddress, tokenAddress, 1, presaleAmount);
+
+            expect(await goldCartridge.balanceOf(igoAddress)).to.be.equal(presaleAmount);
+
+        });
 
         it("should add game to sale mapping", async () => {
             const passedPrice = 10;
@@ -170,59 +166,3 @@ describe("HashupIGO", async () => {
     });
 });
 
-describe("Cartridge", () => {
-    let goldCartridge: GoldCartridgeTokenV0;
-    let cartridgeAddress: string;
-    let igoAddress = ethers.Wallet.createRandom().address;
-
-    describe("Golden cartrdige", () => {
-        beforeEach(async () => {
-            GoldCartridgeFactory = (await ethers.getContractFactory(
-                "GoldCartridgeTokenV0"
-            )) as GoldCartridgeTokenV0__factory;
-            goldCartridge = await GoldCartridgeFactory.deploy(
-                CARTRIDGE_CONFIG.initialAmount,
-                CARTRIDGE_CONFIG.tokenName,
-                CARTRIDGE_CONFIG.tokenSymbol,
-                CARTRIDGE_CONFIG.feeForCreator,
-                CARTRIDGE_CONFIG.metadataUrl,
-                igoAddress
-            );
-
-            await goldCartridge.deployed();
-            cartridgeAddress = goldCartridge.address;
-        });
-
-        describe("constructor()", () => {
-            it("should set initial amount correctly", async () => {
-                const initialAmount = await goldCartridge.totalSupply();
-                expect(initialAmount).to.be.equal(CARTRIDGE_CONFIG.initialAmount);
-            });
-
-            it("should send all cartridges to creator on creation", async () => {
-                const creatorBalance = await goldCartridge.balanceOf(owner.address);
-                expect(creatorBalance).to.be.equal(CARTRIDGE_CONFIG.initialAmount);
-            });
-
-            it("should set game name correctly", async () => {
-                const gameName = await goldCartridge.name();
-                expect(gameName).to.be.equal(CARTRIDGE_CONFIG.tokenName);
-            });
-
-            it("should set game symbol correctly", async () => {
-                const gameSymbol = await goldCartridge.symbol();
-                expect(gameSymbol).to.be.equal(CARTRIDGE_CONFIG.tokenSymbol);
-            });
-
-            it("should set creator correctly", async () => {
-              const creator = await goldCartridge.creator();
-              expect(creator).to.be.equal(owner.address);
-          });
-          describe("approve()", async () => {
-            it("should revert if its bigger than max uint256", async () => {
-              await expect(goldCartridge.approve(userTwo.address, "115792089237316195423570985008687907853269984665640564039457584007913129639936")).to.be.reverted;
-            })
-          })
-        });
-    });
-});

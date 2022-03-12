@@ -3,9 +3,9 @@ pragma solidity ^0.8;
 import "./Cartridge.sol";
 import "hardhat/console.sol";
 
-contract GoldCartridgeTokenV0 is Cartridge {
-    uint256 internal constant maxSupply = 133_700 * 10**decimals;
-    uint256 internal constant maxFee = 5 * 10**feeDecimals;
+contract GrayCartridgeTokenV0 is Cartridge {
+    uint256 internal constant maxSupply = 100_000_000 * 10**decimals;
+    uint256 internal constant maxFee = 20 * 10**feeDecimals;
 
     constructor(
         uint256 _initialAmount,
@@ -18,7 +18,7 @@ contract GoldCartridgeTokenV0 is Cartridge {
         require(_initialAmount <= maxSupply);
         require((_feeForCreator > 0) && (_feeForCreator <= maxFee)); // Pretends the overflow the creators fee
 
-        color = "gold";
+        color = "gray";
         balances[msg.sender] = _initialAmount;
         totalSupply = _initialAmount;
         name = _tokenName;

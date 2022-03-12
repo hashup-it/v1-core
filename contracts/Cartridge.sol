@@ -56,7 +56,6 @@ abstract contract Cartridge is CartridgeOwnable, IERC20 {
         override
         returns (bool success)
     {
-        console.log("XD");
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value); //solhint-disable-line indent, no-unused-vars
         return true;
@@ -67,7 +66,7 @@ abstract contract Cartridge is CartridgeOwnable, IERC20 {
         view
         returns (uint256, uint256)
     {
-        if (_from == hashUpIGO) {
+        if (_from == hashUpIGO || _from == creator()) {
             return (_value, 0);
         }
         uint256 feesAmount = (_value * feeForCreator) / 1000;
@@ -99,9 +98,7 @@ abstract contract Cartridge is CartridgeOwnable, IERC20 {
         uint256 _value
     ) public override virtual returns (bool success) {
         uint256 allowances = allowed[_from][msg.sender];
-        console.log(msg.sender);
-        console.log(allowances);
-        console.log(_value);
+
         require(
             balances[_from] >= _value && allowances >= _value,
             "token balance or allowance is lower than amount requested"
