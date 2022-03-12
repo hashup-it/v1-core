@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 
 import "hardhat/console.sol";
@@ -13,6 +14,10 @@ contract HashupIGO {
     mapping(address => uint256) private raisedAmount;
     mapping(address => PaymentMethod) private cartridgeSales;
 
+    
+    /**
+    * @dev Reverts if no not Cartridge creator.
+    */
     modifier isCartridgeCreator(address _cartridgeAddress) {
         require(
             msg.sender == Cartridge(_cartridgeAddress).creator(),
@@ -21,6 +26,13 @@ contract HashupIGO {
         _;
     }
 
+    /**
+    * @notice Sets your Cartridge Token for sale, must be its creator.
+    * @param _cartridgeAddress Address of Cartridge token
+    * @param _paymentTokenAddress Address of token you want people to pay in (preffrably USD Token)
+    * @param _price Unit price of Cartridge
+    * @param _amount Amount of Cartridges you want to distribute to IGO
+    */
     function setCartridgeForSale(
         address _cartridgeAddress,
         address _paymentTokenAddress,
@@ -39,6 +51,10 @@ contract HashupIGO {
         );
     }
 
+    /**
+    * @param _cartridgeAddress Address of Cartridge token price is checked for
+    * @return price Price per unit of cartridge
+    */
     function getCartridgePrice(address _cartridgeAddress)
         public
         view
@@ -47,6 +63,10 @@ contract HashupIGO {
         return cartridgeSales[_cartridgeAddress].price;
     }
 
+    /**
+    * @param _cartridgeAddress Address of Cartridge payment token is checked for
+    * @return price IGO payment token address
+    */
     function getPaymentToken(address _cartridgeAddress)
         public
         view

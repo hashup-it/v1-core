@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 
 abstract contract CartridgeOwnable {
@@ -7,10 +8,16 @@ abstract contract CartridgeOwnable {
         _creator = msg.sender;
     }
 
-    function creator() public view returns (address) {
+    /**
+    * @returns creator Address of currently set creator
+    */
+    function creator() public view returns (address creator) {
         return _creator;
     }
 
+    /**
+    * @dev Reverts if no not creator.
+    */
     modifier onlyCreator() {
         require(
             msg.sender == _creator,

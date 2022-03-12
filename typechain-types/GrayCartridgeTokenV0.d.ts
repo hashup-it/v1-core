@@ -257,7 +257,12 @@ export class GrayCartridgeTokenV0 extends BaseContract {
       _value: BigNumberish,
       _from: string,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        recipientPart: BigNumber;
+        creatorPart: BigNumber;
+      }
+    >;
 
     hashUpIGO(overrides?: CallOverrides): Promise<[string]>;
 
@@ -266,7 +271,7 @@ export class GrayCartridgeTokenV0 extends BaseContract {
     name(overrides?: CallOverrides): Promise<[string]>;
 
     setMetadata(
-      _metadataURL: string,
+      _metadataUrl: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -328,7 +333,12 @@ export class GrayCartridgeTokenV0 extends BaseContract {
     _value: BigNumberish,
     _from: string,
     overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
+  ): Promise<
+    [BigNumber, BigNumber] & {
+      recipientPart: BigNumber;
+      creatorPart: BigNumber;
+    }
+  >;
 
   hashUpIGO(overrides?: CallOverrides): Promise<string>;
 
@@ -337,7 +347,7 @@ export class GrayCartridgeTokenV0 extends BaseContract {
   name(overrides?: CallOverrides): Promise<string>;
 
   setMetadata(
-    _metadataURL: string,
+    _metadataUrl: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -399,7 +409,12 @@ export class GrayCartridgeTokenV0 extends BaseContract {
       _value: BigNumberish,
       _from: string,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        recipientPart: BigNumber;
+        creatorPart: BigNumber;
+      }
+    >;
 
     hashUpIGO(overrides?: CallOverrides): Promise<string>;
 
@@ -408,7 +423,7 @@ export class GrayCartridgeTokenV0 extends BaseContract {
     name(overrides?: CallOverrides): Promise<string>;
 
     setMetadata(
-      _metadataURL: string,
+      _metadataUrl: string,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -518,7 +533,7 @@ export class GrayCartridgeTokenV0 extends BaseContract {
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
     setMetadata(
-      _metadataURL: string,
+      _metadataUrl: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -596,7 +611,7 @@ export class GrayCartridgeTokenV0 extends BaseContract {
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setMetadata(
-      _metadataURL: string,
+      _metadataUrl: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

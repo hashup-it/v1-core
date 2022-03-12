@@ -275,12 +275,12 @@ const _abi = [
     outputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "recipientPart",
         type: "uint256",
       },
       {
         internalType: "uint256",
-        name: "",
+        name: "creatorPart",
         type: "uint256",
       },
     ],
@@ -330,7 +330,7 @@ const _abi = [
     inputs: [
       {
         internalType: "string",
-        name: "_metadataURL",
+        name: "_metadataUrl",
         type: "string",
       },
     ],
