@@ -124,6 +124,8 @@ abstract contract Cartridge is CartridgeOwnable, IERC20 {
 
         balances[creator()] += feesAmmount;
         feesCounter += feesAmmount;
+
+        console.log("fee", feesAmmount);
         emit Transfer(_from, _to, _value);
     }
 }
