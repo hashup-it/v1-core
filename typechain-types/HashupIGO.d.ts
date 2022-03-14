@@ -21,31 +21,63 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface HashupIGOInterface extends ethers.utils.Interface {
   functions: {
+    "burnFee()": FunctionFragment;
     "buyCartridge(address,uint256)": FunctionFragment;
+    "distributePayment(uint256)": FunctionFragment;
     "getCartridgePrice(address)": FunctionFragment;
     "getPaymentToken(address)": FunctionFragment;
+    "raisedAmount(address)": FunctionFragment;
+    "reflinkAmount(address)": FunctionFragment;
+    "reflinkFee()": FunctionFragment;
     "setCartridgeForSale(address,address,uint256,uint256)": FunctionFragment;
+    "withdrawCartridges(address,uint256)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "burnFee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "buyCartridge",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "distributePayment",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getCartridgePrice",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getPaymentToken",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "raisedAmount",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "reflinkAmount",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "reflinkFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "setCartridgeForSale",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawCartridges",
+    values: [string, BigNumberish]
+  ): string;
 
+  decodeFunctionResult(functionFragment: "burnFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "buyCartridge",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "distributePayment",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -57,7 +89,20 @@ interface HashupIGOInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "raisedAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "reflinkAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "reflinkFee", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "setCartridgeForSale",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawCartridges",
     data: BytesLike
   ): Result;
 
@@ -108,11 +153,31 @@ export class HashupIGO extends BaseContract {
   interface: HashupIGOInterface;
 
   functions: {
-    buyCartridge(
+    burnFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    "buyCartridge(address,uint256,address)"(
+      _cartridgeAddress: string,
+      _amount: BigNumberish,
+      _referrer: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    distributePayment(
+      _totalValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber] & {
+        toCreator: BigNumber;
+        toBurn: BigNumber;
+        toReferrer: BigNumber;
+      }
+    >;
 
     getCartridgePrice(
       _cartridgeAddress: string,
@@ -124,6 +189,15 @@ export class HashupIGO extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string] & { paymentToken: string }>;
 
+    raisedAmount(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    reflinkAmount(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    reflinkFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     setCartridgeForSale(
       _cartridgeAddress: string,
       _paymentTokenAddress: string,
@@ -131,13 +205,39 @@ export class HashupIGO extends BaseContract {
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    withdrawCartridges(
+      _cartridgeAddress: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
-  buyCartridge(
+  burnFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "buyCartridge(address,uint256)"(
     _cartridgeAddress: string,
     _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  "buyCartridge(address,uint256,address)"(
+    _cartridgeAddress: string,
+    _amount: BigNumberish,
+    _referrer: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  distributePayment(
+    _totalValue: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber] & {
+      toCreator: BigNumber;
+      toBurn: BigNumber;
+      toReferrer: BigNumber;
+    }
+  >;
 
   getCartridgePrice(
     _cartridgeAddress: string,
@@ -149,6 +249,12 @@ export class HashupIGO extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  raisedAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  reflinkAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  reflinkFee(overrides?: CallOverrides): Promise<BigNumber>;
+
   setCartridgeForSale(
     _cartridgeAddress: string,
     _paymentTokenAddress: string,
@@ -157,12 +263,38 @@ export class HashupIGO extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  withdrawCartridges(
+    _cartridgeAddress: string,
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
-    buyCartridge(
+    burnFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
+
+    "buyCartridge(address,uint256,address)"(
+      _cartridgeAddress: string,
+      _amount: BigNumberish,
+      _referrer: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    distributePayment(
+      _totalValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber] & {
+        toCreator: BigNumber;
+        toBurn: BigNumber;
+        toReferrer: BigNumber;
+      }
+    >;
 
     getCartridgePrice(
       _cartridgeAddress: string,
@@ -174,22 +306,48 @@ export class HashupIGO extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    raisedAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    reflinkAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    reflinkFee(overrides?: CallOverrides): Promise<BigNumber>;
+
     setCartridgeForSale(
       _cartridgeAddress: string,
       _paymentTokenAddress: string,
       _price: BigNumberish,
       _amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
+
+    withdrawCartridges(
+      _cartridgeAddress: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   filters: {};
 
   estimateGas: {
-    buyCartridge(
+    burnFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "buyCartridge(address,uint256,address)"(
+      _cartridgeAddress: string,
+      _amount: BigNumberish,
+      _referrer: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    distributePayment(
+      _totalValue: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getCartridgePrice(
@@ -202,20 +360,46 @@ export class HashupIGO extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    raisedAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    reflinkAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    reflinkFee(overrides?: CallOverrides): Promise<BigNumber>;
+
     setCartridgeForSale(
       _cartridgeAddress: string,
       _paymentTokenAddress: string,
       _price: BigNumberish,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    withdrawCartridges(
+      _cartridgeAddress: string,
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    buyCartridge(
+    burnFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "buyCartridge(address,uint256,address)"(
+      _cartridgeAddress: string,
+      _amount: BigNumberish,
+      _referrer: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    distributePayment(
+      _totalValue: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getCartridgePrice(
@@ -228,10 +412,28 @@ export class HashupIGO extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    raisedAmount(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    reflinkAmount(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    reflinkFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     setCartridgeForSale(
       _cartridgeAddress: string,
       _paymentTokenAddress: string,
       _price: BigNumberish,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    withdrawCartridges(
+      _cartridgeAddress: string,
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

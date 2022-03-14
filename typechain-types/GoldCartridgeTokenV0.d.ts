@@ -27,13 +27,13 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "balances(address)": FunctionFragment;
+    "calculateFee(uint256,address)": FunctionFragment;
     "color()": FunctionFragment;
     "creator()": FunctionFragment;
     "decimals()": FunctionFragment;
     "feeDecimals()": FunctionFragment;
     "feeForCreator()": FunctionFragment;
     "feesCounter()": FunctionFragment;
-    "getAmountAfterFees(uint256,address)": FunctionFragment;
     "hashUpIGO()": FunctionFragment;
     "metadata()": FunctionFragment;
     "name()": FunctionFragment;
@@ -62,6 +62,10 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "balances", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "calculateFee",
+    values: [BigNumberish, string]
+  ): string;
   encodeFunctionData(functionFragment: "color", values?: undefined): string;
   encodeFunctionData(functionFragment: "creator", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
@@ -76,10 +80,6 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "feesCounter",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getAmountAfterFees",
-    values: [BigNumberish, string]
   ): string;
   encodeFunctionData(functionFragment: "hashUpIGO", values?: undefined): string;
   encodeFunctionData(functionFragment: "metadata", values?: undefined): string;
@@ -108,6 +108,10 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balances", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "calculateFee",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "color", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
@@ -121,10 +125,6 @@ interface GoldCartridgeTokenV0Interface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "feesCounter",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getAmountAfterFees",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "hashUpIGO", data: BytesLike): Result;
@@ -241,19 +241,7 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    color(overrides?: CallOverrides): Promise<[string]>;
-
-    creator(overrides?: CallOverrides): Promise<[string]>;
-
-    decimals(overrides?: CallOverrides): Promise<[number]>;
-
-    feeDecimals(overrides?: CallOverrides): Promise<[number]>;
-
-    feeForCreator(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    feesCounter(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    getAmountAfterFees(
+    calculateFee(
       _value: BigNumberish,
       _from: string,
       overrides?: CallOverrides
@@ -263,6 +251,18 @@ export class GoldCartridgeTokenV0 extends BaseContract {
         creatorPart: BigNumber;
       }
     >;
+
+    color(overrides?: CallOverrides): Promise<[string]>;
+
+    creator(overrides?: CallOverrides): Promise<[string] & { creator: string }>;
+
+    decimals(overrides?: CallOverrides): Promise<[number]>;
+
+    feeDecimals(overrides?: CallOverrides): Promise<[number]>;
+
+    feeForCreator(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    feesCounter(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     hashUpIGO(overrides?: CallOverrides): Promise<[string]>;
 
@@ -317,6 +317,17 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
   balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  calculateFee(
+    _value: BigNumberish,
+    _from: string,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber] & {
+      recipientPart: BigNumber;
+      creatorPart: BigNumber;
+    }
+  >;
+
   color(overrides?: CallOverrides): Promise<string>;
 
   creator(overrides?: CallOverrides): Promise<string>;
@@ -328,17 +339,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
   feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
   feesCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getAmountAfterFees(
-    _value: BigNumberish,
-    _from: string,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & {
-      recipientPart: BigNumber;
-      creatorPart: BigNumber;
-    }
-  >;
 
   hashUpIGO(overrides?: CallOverrides): Promise<string>;
 
@@ -393,6 +393,17 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    calculateFee(
+      _value: BigNumberish,
+      _from: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        recipientPart: BigNumber;
+        creatorPart: BigNumber;
+      }
+    >;
+
     color(overrides?: CallOverrides): Promise<string>;
 
     creator(overrides?: CallOverrides): Promise<string>;
@@ -404,17 +415,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
     feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
     feesCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getAmountAfterFees(
-      _value: BigNumberish,
-      _from: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        recipientPart: BigNumber;
-        creatorPart: BigNumber;
-      }
-    >;
 
     hashUpIGO(overrides?: CallOverrides): Promise<string>;
 
@@ -508,6 +508,12 @@ export class GoldCartridgeTokenV0 extends BaseContract {
 
     balances(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    calculateFee(
+      _value: BigNumberish,
+      _from: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     color(overrides?: CallOverrides): Promise<BigNumber>;
 
     creator(overrides?: CallOverrides): Promise<BigNumber>;
@@ -519,12 +525,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
     feeForCreator(overrides?: CallOverrides): Promise<BigNumber>;
 
     feesCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getAmountAfterFees(
-      _value: BigNumberish,
-      _from: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     hashUpIGO(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -586,6 +586,12 @@ export class GoldCartridgeTokenV0 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    calculateFee(
+      _value: BigNumberish,
+      _from: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     color(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -597,12 +603,6 @@ export class GoldCartridgeTokenV0 extends BaseContract {
     feeForCreator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     feesCounter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getAmountAfterFees(
-      _value: BigNumberish,
-      _from: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     hashUpIGO(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

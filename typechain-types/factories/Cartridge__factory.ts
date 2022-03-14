@@ -181,6 +181,35 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_value",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_from",
+        type: "address",
+      },
+    ],
+    name: "calculateFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "recipientPart",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "creatorPart",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "color",
     outputs: [
@@ -199,7 +228,7 @@ const _abi = [
     outputs: [
       {
         internalType: "address",
-        name: "",
+        name: "creator",
         type: "address",
       },
     ],
@@ -252,35 +281,6 @@ const _abi = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_value",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "_from",
-        type: "address",
-      },
-    ],
-    name: "getAmountAfterFees",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "recipientPart",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "creatorPart",
         type: "uint256",
       },
     ],

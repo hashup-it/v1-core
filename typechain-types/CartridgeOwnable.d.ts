@@ -74,7 +74,7 @@ export class CartridgeOwnable extends BaseContract {
   interface: CartridgeOwnableInterface;
 
   functions: {
-    creator(overrides?: CallOverrides): Promise<[string]>;
+    creator(overrides?: CallOverrides): Promise<[string] & { creator: string }>;
   };
 
   creator(overrides?: CallOverrides): Promise<string>;

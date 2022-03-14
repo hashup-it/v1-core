@@ -16,7 +16,7 @@ const _abi = [
     outputs: [
       {
         internalType: "address",
-        name: "",
+        name: "creator",
         type: "address",
       },
     ],
