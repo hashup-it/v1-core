@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Hashup
+
 pragma solidity ^0.8;
  
 import "./IERC20.sol";
