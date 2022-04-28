@@ -37,6 +37,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GreenCartridgeTokenV0__factory>;
     getContractFactory(
+      name: "HashupGamerProfile",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.HashupGamerProfile__factory>;
+    getContractFactory(
       name: "HashupIGO",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.HashupIGO__factory>;
@@ -83,6 +87,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.GreenCartridgeTokenV0>;
+    getContractAt(
+      name: "HashupGamerProfile",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.HashupGamerProfile>;
     getContractAt(
       name: "HashupIGO",
       address: string,

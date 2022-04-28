@@ -7,6 +7,7 @@ export type { CartridgeOwnable } from "./CartridgeOwnable";
 export type { GoldCartridgeTokenV0 } from "./GoldCartridgeTokenV0";
 export type { GrayCartridgeTokenV0 } from "./GrayCartridgeTokenV0";
 export type { GreenCartridgeTokenV0 } from "./GreenCartridgeTokenV0";
+export type { HashupGamerProfile } from "./HashupGamerProfile";
 export type { HashupIGO } from "./HashupIGO";
 export type { IERC20 } from "./IERC20";
 export type { RedCartridgeTokenV0 } from "./RedCartridgeTokenV0";
@@ -18,6 +19,7 @@ export { CartridgeOwnable__factory } from "./factories/CartridgeOwnable__factory
 export { GoldCartridgeTokenV0__factory } from "./factories/GoldCartridgeTokenV0__factory";
 export { GrayCartridgeTokenV0__factory } from "./factories/GrayCartridgeTokenV0__factory";
 export { GreenCartridgeTokenV0__factory } from "./factories/GreenCartridgeTokenV0__factory";
+export { HashupGamerProfile__factory } from "./factories/HashupGamerProfile__factory";
 export { HashupIGO__factory } from "./factories/HashupIGO__factory";
 export { IERC20__factory } from "./factories/IERC20__factory";
 export { RedCartridgeTokenV0__factory } from "./factories/RedCartridgeTokenV0__factory";

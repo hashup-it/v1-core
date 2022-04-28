@@ -106,8 +106,37 @@ interface HashupIGOInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "Buy(address,uint256,uint256)": EventFragment;
+    "Sale(address,address,uint256,uint256)": EventFragment;
+    "Withdraw(address,uint256)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "Buy"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Sale"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
+
+export type BuyEvent = TypedEvent<
+  [string, BigNumber, BigNumber] & {
+    cartridgeAddress: string;
+    amount: BigNumber;
+    price: BigNumber;
+  }
+>;
+
+export type SaleEvent = TypedEvent<
+  [string, string, BigNumber, BigNumber] & {
+    cartridgeAddress: string;
+    paymentTokenAddress: string;
+    price: BigNumber;
+    amount: BigNumber;
+  }
+>;
+
+export type WithdrawEvent = TypedEvent<
+  [string, BigNumber] & { cartridgeAddress: string; amount: BigNumber }
+>;
 
 export class HashupIGO extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -327,7 +356,71 @@ export class HashupIGO extends BaseContract {
     ): Promise<BigNumber>;
   };
 
-  filters: {};
+  filters: {
+    "Buy(address,uint256,uint256)"(
+      cartridgeAddress?: null,
+      amount?: null,
+      price?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { cartridgeAddress: string; amount: BigNumber; price: BigNumber }
+    >;
+
+    Buy(
+      cartridgeAddress?: null,
+      amount?: null,
+      price?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { cartridgeAddress: string; amount: BigNumber; price: BigNumber }
+    >;
+
+    "Sale(address,address,uint256,uint256)"(
+      cartridgeAddress?: null,
+      paymentTokenAddress?: null,
+      price?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        cartridgeAddress: string;
+        paymentTokenAddress: string;
+        price: BigNumber;
+        amount: BigNumber;
+      }
+    >;
+
+    Sale(
+      cartridgeAddress?: null,
+      paymentTokenAddress?: null,
+      price?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        cartridgeAddress: string;
+        paymentTokenAddress: string;
+        price: BigNumber;
+        amount: BigNumber;
+      }
+    >;
+
+    "Withdraw(address,uint256)"(
+      cartridgeAddress?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { cartridgeAddress: string; amount: BigNumber }
+    >;
+
+    Withdraw(
+      cartridgeAddress?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { cartridgeAddress: string; amount: BigNumber }
+    >;
+  };
 
   estimateGas: {
     burnFee(overrides?: CallOverrides): Promise<BigNumber>;
