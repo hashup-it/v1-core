@@ -121,9 +121,84 @@ describe("HashupGamerProfile", async () => {
 					"new socials",
 					ethers.constants.AddressZero
 				);
-			const resProfile = await hashupGamerProfile.profiles(userTwo.address);
+			const resProfile = await hashupGamerProfile.profiles(
+				userTwo.address
+			);
 			expect(resProfile.nickname).to.be.equal("softoshi gamermoto");
+		});
+		it("should give points to refferer and user", async () => {
+			await hashupGamerProfile
+				.connect(userTwo)
+				.updateProfile(
+					"softoshi gamermoto 3",
+					"#ff0eef",
+					"cdn.hashup.it/image.jpg",
+					"new description",
+					"new socials",
+					userOne.address
+				);
+			await hashupGamerProfile
+				.connect(owner)
+				.updateProfile(
+					"softoshi gamermoto 4",
+					"#ff0eef",
+					"cdn.hashup.it/image.jpg",
+					"new description",
+					"new socials",
+					userOne.address
+				);
 
+			const userOnePoints = await hashupGamerProfile.pointsEarned(
+				userOne.address
+			);
+			const userTwoPoints = await hashupGamerProfile.pointsEarned(
+				userTwo.address
+			);
+
+			expect(userOnePoints).to.be.equal(20);
+			expect(userTwoPoints).to.be.equal(10);
+		});
+		it("should give points only first time", async () => {
+			await hashupGamerProfile
+				.connect(userOne)
+				.updateProfile(
+					"softoshi",
+					"#ff0eef",
+					"cdn.hashup.it/image.jpg",
+					"new description",
+					"new socials",
+					userTwo.address
+				);
+
+			const userOnePoints = await hashupGamerProfile.pointsEarned(
+				userOne.address
+			);
+			const userTwoPoints = await hashupGamerProfile.pointsEarned(
+				userTwo.address
+			);
+
+			expect(userOnePoints).to.be.equal(10);
+			expect(userTwoPoints).to.be.equal(0);
+		});
+		it("should set nickname owner properly", async () => {
+			const nickOwner = await hashupGamerProfile.nicknameOwners(
+				"softoshi gamermoto"
+			);
+			expect(nickOwner).to.be.equal(userOne.address);
+			await hashupGamerProfile
+				.connect(userOne)
+				.updateProfile(
+					"softoshi",
+					"#ff0eef",
+					"cdn.hashup.it/image.jpg",
+					"new description",
+					"new socials",
+					userTwo.address
+				);
+			const newNickOwner = await hashupGamerProfile.nicknameOwners(
+				"softoshi gamermoto"
+			);
+			expect(newNickOwner).to.be.equal(ethers.constants.AddressZero);
 		});
 	});
 });
