@@ -22,6 +22,41 @@ describe("HashupGamerProfile", async () => {
 		[owner, userOne, userTwo] = await ethers.getSigners();
 	});
 
+	describe("initialization", async () => {
+		it("should set creator to deployer", async () => {
+			const creator = await hashupGamerProfile.creator();
+			expect(creator).to.be.equal(owner.address);
+		});
+		it("should set users unverified", async () => {
+			const isVerified = await (
+				await hashupGamerProfile.profiles(userOne.address)
+			).isVerified;
+			expect(isVerified).to.be.equal(false);
+		});
+	});
+
+	describe("verifyProfile()", async () => {
+		it("should set verified properly", async () => {
+			await hashupGamerProfile.verifyProfile(userOne.address, true);
+			let isVerified = await (
+				await hashupGamerProfile.profiles(userOne.address)
+			).isVerified;
+			expect(isVerified).to.be.equal(true);
+			await hashupGamerProfile.verifyProfile(userOne.address, false);
+			isVerified = await (
+				await hashupGamerProfile.profiles(userOne.address)
+			).isVerified;
+			expect(isVerified).to.be.equal(false);
+		});
+		it("should revert if not creator", async () => {
+			await expect(
+				hashupGamerProfile
+					.connect(userOne)
+					.verifyProfile(userOne.address, true)
+			).to.be.revertedWith("HashupCreatorship: caller is not creator");
+		});
+	});
+
 	describe("updateProfile()", async () => {
 		beforeEach(async () => {
 			await hashupGamerProfile

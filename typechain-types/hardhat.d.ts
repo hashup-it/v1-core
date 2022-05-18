@@ -13,105 +13,123 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
-      name: "BlueCartridgeTokenV0",
+      name: "ERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.BlueCartridgeTokenV0__factory>;
+    ): Promise<Contracts.ERC20__factory>;
     getContractFactory(
-      name: "Cartridge",
+      name: "ERC20Burnable",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Cartridge__factory>;
+    ): Promise<Contracts.ERC20Burnable__factory>;
     getContractFactory(
-      name: "CartridgeOwnable",
+      name: "IERC20Metadata",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CartridgeOwnable__factory>;
-    getContractFactory(
-      name: "GoldCartridgeTokenV0",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.GoldCartridgeTokenV0__factory>;
-    getContractFactory(
-      name: "GrayCartridgeTokenV0",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.GrayCartridgeTokenV0__factory>;
-    getContractFactory(
-      name: "GreenCartridgeTokenV0",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.GreenCartridgeTokenV0__factory>;
-    getContractFactory(
-      name: "HashupGamerProfile",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.HashupGamerProfile__factory>;
-    getContractFactory(
-      name: "HashupIGO",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.HashupIGO__factory>;
+    ): Promise<Contracts.IERC20Metadata__factory>;
     getContractFactory(
       name: "IERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
-      name: "RedCartridgeTokenV0",
+      name: "IUniswapV3SwapCallback",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.RedCartridgeTokenV0__factory>;
+    ): Promise<Contracts.IUniswapV3SwapCallback__factory>;
     getContractFactory(
-      name: "USDTest",
+      name: "ISwapRouter",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.USDTest__factory>;
+    ): Promise<Contracts.ISwapRouter__factory>;
+    getContractFactory(
+      name: "HashupToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.HashupToken__factory>;
+    getContractFactory(
+      name: "HashupCartridge",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.HashupCartridge__factory>;
+    getContractFactory(
+      name: "HashupGamerProfile",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.HashupGamerProfile__factory>;
+    getContractFactory(
+      name: "HashupStore",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.HashupStore__factory>;
+    getContractFactory(
+      name: "CartridgeMetadata",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CartridgeMetadata__factory>;
+    getContractFactory(
+      name: "Creatorship",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Creatorship__factory>;
+    getContractFactory(
+      name: "TestToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TestToken__factory>;
 
     getContractAt(
-      name: "BlueCartridgeTokenV0",
+      name: "ERC20",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.BlueCartridgeTokenV0>;
+    ): Promise<Contracts.ERC20>;
     getContractAt(
-      name: "Cartridge",
+      name: "ERC20Burnable",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.Cartridge>;
+    ): Promise<Contracts.ERC20Burnable>;
     getContractAt(
-      name: "CartridgeOwnable",
+      name: "IERC20Metadata",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.CartridgeOwnable>;
-    getContractAt(
-      name: "GoldCartridgeTokenV0",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.GoldCartridgeTokenV0>;
-    getContractAt(
-      name: "GrayCartridgeTokenV0",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.GrayCartridgeTokenV0>;
-    getContractAt(
-      name: "GreenCartridgeTokenV0",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.GreenCartridgeTokenV0>;
-    getContractAt(
-      name: "HashupGamerProfile",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.HashupGamerProfile>;
-    getContractAt(
-      name: "HashupIGO",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.HashupIGO>;
+    ): Promise<Contracts.IERC20Metadata>;
     getContractAt(
       name: "IERC20",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
-      name: "RedCartridgeTokenV0",
+      name: "IUniswapV3SwapCallback",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.RedCartridgeTokenV0>;
+    ): Promise<Contracts.IUniswapV3SwapCallback>;
     getContractAt(
-      name: "USDTest",
+      name: "ISwapRouter",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.USDTest>;
+    ): Promise<Contracts.ISwapRouter>;
+    getContractAt(
+      name: "HashupToken",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.HashupToken>;
+    getContractAt(
+      name: "HashupCartridge",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.HashupCartridge>;
+    getContractAt(
+      name: "HashupGamerProfile",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.HashupGamerProfile>;
+    getContractAt(
+      name: "HashupStore",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.HashupStore>;
+    getContractAt(
+      name: "CartridgeMetadata",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CartridgeMetadata>;
+    getContractAt(
+      name: "Creatorship",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Creatorship>;
+    getContractAt(
+      name: "TestToken",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TestToken>;
 
     // default types
     getContractFactory(

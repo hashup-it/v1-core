@@ -21,13 +21,17 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface HashupGamerProfileInterface extends ethers.utils.Interface {
   functions: {
+    "creator()": FunctionFragment;
     "gotReward(address)": FunctionFragment;
     "nicknameOwners(string)": FunctionFragment;
     "pointsEarned(address)": FunctionFragment;
     "profiles(address)": FunctionFragment;
+    "transferCreatorship(address)": FunctionFragment;
     "updateProfile(string,string,string,string,string,address)": FunctionFragment;
+    "verifyProfile(address,bool)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "creator", values?: undefined): string;
   encodeFunctionData(functionFragment: "gotReward", values: [string]): string;
   encodeFunctionData(
     functionFragment: "nicknameOwners",
@@ -39,10 +43,19 @@ interface HashupGamerProfileInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "profiles", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "transferCreatorship",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateProfile",
     values: [string, string, string, string, string, string]
   ): string;
+  encodeFunctionData(
+    functionFragment: "verifyProfile",
+    values: [string, boolean]
+  ): string;
 
+  decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "gotReward", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nicknameOwners",
@@ -54,18 +67,34 @@ interface HashupGamerProfileInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "profiles", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "transferCreatorship",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "updateProfile",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "verifyProfile",
     data: BytesLike
   ): Result;
 
   events: {
-    "UpdateProfile(address,string,string,string,string,string,address)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+    "UpdatedProfile(address,string,string,string,string,string,address)": EventFragment;
+    "VerifiedUser(address,bool)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "UpdateProfile"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdatedProfile"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VerifiedUser"): EventFragment;
 }
 
-export type UpdateProfileEvent = TypedEvent<
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
+
+export type UpdatedProfileEvent = TypedEvent<
   [string, string, string, string, string, string, string] & {
     user: string;
     newNickname: string;
@@ -75,6 +104,10 @@ export type UpdateProfileEvent = TypedEvent<
     newSocials: string;
     referrer: string;
   }
+>;
+
+export type VerifiedUserEvent = TypedEvent<
+  [string, boolean] & { user: string; value: boolean }
 >;
 
 export class HashupGamerProfile extends BaseContract {
@@ -121,6 +154,8 @@ export class HashupGamerProfile extends BaseContract {
   interface: HashupGamerProfileInterface;
 
   functions: {
+    creator(overrides?: CallOverrides): Promise<[string]>;
+
     gotReward(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
     nicknameOwners(arg0: string, overrides?: CallOverrides): Promise<[string]>;
@@ -131,14 +166,20 @@ export class HashupGamerProfile extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [string, string, string, string, string] & {
+      [string, string, string, string, string, boolean] & {
         nickname: string;
         color: string;
         avatar: string;
         description: string;
         socials: string;
+        isVerified: boolean;
       }
     >;
+
+    transferCreatorship(
+      _newCreator: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     updateProfile(
       _nickname: string,
@@ -149,7 +190,15 @@ export class HashupGamerProfile extends BaseContract {
       _refferer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    verifyProfile(
+      _user: string,
+      _value: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
+
+  creator(overrides?: CallOverrides): Promise<string>;
 
   gotReward(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -161,14 +210,20 @@ export class HashupGamerProfile extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
-    [string, string, string, string, string] & {
+    [string, string, string, string, string, boolean] & {
       nickname: string;
       color: string;
       avatar: string;
       description: string;
       socials: string;
+      isVerified: boolean;
     }
   >;
+
+  transferCreatorship(
+    _newCreator: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   updateProfile(
     _nickname: string,
@@ -180,7 +235,15 @@ export class HashupGamerProfile extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  verifyProfile(
+    _user: string,
+    _value: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
+    creator(overrides?: CallOverrides): Promise<string>;
+
     gotReward(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
     nicknameOwners(arg0: string, overrides?: CallOverrides): Promise<string>;
@@ -191,14 +254,20 @@ export class HashupGamerProfile extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [string, string, string, string, string] & {
+      [string, string, string, string, string, boolean] & {
         nickname: string;
         color: string;
         avatar: string;
         description: string;
         socials: string;
+        isVerified: boolean;
       }
     >;
+
+    transferCreatorship(
+      _newCreator: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     updateProfile(
       _nickname: string,
@@ -209,10 +278,32 @@ export class HashupGamerProfile extends BaseContract {
       _refferer: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    verifyProfile(
+      _user: string,
+      _value: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
-    "UpdateProfile(address,string,string,string,string,string,address)"(
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    "UpdatedProfile(address,string,string,string,string,string,address)"(
       user?: null,
       newNickname?: null,
       newColor?: null,
@@ -233,7 +324,7 @@ export class HashupGamerProfile extends BaseContract {
       }
     >;
 
-    UpdateProfile(
+    UpdatedProfile(
       user?: null,
       newNickname?: null,
       newColor?: null,
@@ -253,9 +344,21 @@ export class HashupGamerProfile extends BaseContract {
         referrer: string;
       }
     >;
+
+    "VerifiedUser(address,bool)"(
+      user?: null,
+      value?: null
+    ): TypedEventFilter<[string, boolean], { user: string; value: boolean }>;
+
+    VerifiedUser(
+      user?: null,
+      value?: null
+    ): TypedEventFilter<[string, boolean], { user: string; value: boolean }>;
   };
 
   estimateGas: {
+    creator(overrides?: CallOverrides): Promise<BigNumber>;
+
     gotReward(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     nicknameOwners(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -263,6 +366,11 @@ export class HashupGamerProfile extends BaseContract {
     pointsEarned(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     profiles(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    transferCreatorship(
+      _newCreator: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     updateProfile(
       _nickname: string,
@@ -273,9 +381,17 @@ export class HashupGamerProfile extends BaseContract {
       _refferer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    verifyProfile(
+      _user: string,
+      _value: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     gotReward(
       arg0: string,
       overrides?: CallOverrides
@@ -296,6 +412,11 @@ export class HashupGamerProfile extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    transferCreatorship(
+      _newCreator: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     updateProfile(
       _nickname: string,
       _color: string,
@@ -303,6 +424,12 @@ export class HashupGamerProfile extends BaseContract {
       _description: string,
       _socials: string,
       _refferer: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    verifyProfile(
+      _user: string,
+      _value: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
