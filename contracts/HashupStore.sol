@@ -7,19 +7,16 @@ import "hardhat/console.sol";
 import "./HashupCartridge.sol";
 import "./helpers/Creatorship.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
-import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 /// @title ICO contract for Hashup Cartridges
 /// @author HashUp
 contract HashupStore is Creatorship {
 	// fees
 	uint256 public constant reflinkFee = 5;
-	uint256 public constant burnFee = 10;
+	uint256 public constant platformFee = 20;
 
 	address public paymentToken;
 	address public hashToken;
-	ISwapRouter public swapRouter = ISwapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
 
 	event SentToStore(address cartridgeAddress, uint256 price, uint256 amount);
 	event CartridgesBought(
@@ -122,15 +119,15 @@ contract HashupStore is Creatorship {
 		view
 		returns (
 			uint256 toCreator,
-			uint256 toBurn,
+			uint256 toPlatform,
 			uint256 toReferrer
 		)
 	{
-		uint256 burnt = (_totalValue * burnFee) / 100;
+		uint256 platform = (_totalValue * platformFee) / 100;
 		uint256 ref = (_totalValue * reflinkFee) / 100;
-		uint256 left = _totalValue - ref - burnt;
+		uint256 left = _totalValue - ref - platform;
 
-		return (left, burnt, ref);
+		return (left, platform, ref);
 	}
 
 	/**
@@ -150,10 +147,9 @@ contract HashupStore is Creatorship {
 
 		// calculate total price once
 		uint256 totalPrice = getCartridgePrice(_cartridgeAddress) * _amount;
-
 		(
 			uint256 toCreator,
-			uint256 toBurn,
+			uint256 toPlatform,
 			uint256 toReferrer
 		) = distributePayment(totalPrice);
 
@@ -162,11 +158,16 @@ contract HashupStore is Creatorship {
 		paymentToken.transferFrom(
 			msg.sender,
 			cartridge.creator(),
-			toCreator + toReferrer
+			toCreator
+		);
+		paymentToken.transferFrom(
+			msg.sender,
+			address(this),
+			toPlatform + toReferrer
 		);
 
 		// increase raised amount count
-		raisedAmount[_cartridgeAddress] += toCreator + toReferrer;
+		raisedAmount[_cartridgeAddress] += toCreator;
 
 		// if transaction succeded
 		emit CartridgesBought(_cartridgeAddress, totalPrice, _amount);
@@ -196,7 +197,7 @@ contract HashupStore is Creatorship {
 		//calculate payment distribution
 		(
 			uint256 toCreator,
-			uint256 toBurn,
+			uint256 toPlatform,
 			uint256 toReferrer
 		) = distributePayment(totalPrice);
 
@@ -204,35 +205,12 @@ contract HashupStore is Creatorship {
 		cartridge.transfer(msg.sender, _amount);
 		paymentToken.transferFrom(msg.sender, cartridge.creator(), toCreator);
 		paymentToken.transferFrom(msg.sender, _referrer, toReferrer);
-
+		paymentToken.transferFrom(msg.sender, address(this), toPlatform);
 		// increase raised and reflink amount count
 		raisedAmount[_cartridgeAddress] += toCreator;
 		reflinkAmount[_cartridgeAddress] += toReferrer;
 
 		// if transaction succeded
 		return true;
-	}
-
-	function buyBackAndBurn(
-		uint256 amountIn
-	) private returns(uint burnedAmount) {
-		TransferHelper.safeTransferFrom(paymentToken, msg.sender, address(this), amountIn);
-        TransferHelper.safeApprove(paymentToken, address(swapRouter), amountIn);
-
-		ISwapRouter.ExactInputSingleParams memory params =
-            ISwapRouter.ExactInputSingleParams({
-                tokenIn: paymentToken,
-                tokenOut: hashToken,
-                fee: 3000,
-                recipient: address(this),
-                deadline: block.timestamp,
-                amountIn: amountIn * 10 / 100,
-                amountOutMinimum: 0,
-                sqrtPriceLimitX96: 0
-            });
-
-        burnedAmount = swapRouter.exactInputSingle(params);
-
-		IERC20(hashToken).transfer(address(0), burnedAmount);
 	}
 }

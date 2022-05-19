@@ -21,23 +21,21 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface HashupStoreInterface extends ethers.utils.Interface {
   functions: {
-    "burnFee()": FunctionFragment;
     "buyCartridge(address,uint256)": FunctionFragment;
     "creator()": FunctionFragment;
     "distributePayment(uint256)": FunctionFragment;
     "getCartridgePrice(address)": FunctionFragment;
     "hashToken()": FunctionFragment;
     "paymentToken()": FunctionFragment;
+    "platformFee()": FunctionFragment;
     "raisedAmount(address)": FunctionFragment;
     "reflinkAmount(address)": FunctionFragment;
     "reflinkFee()": FunctionFragment;
     "sendCartridgeToStore(address,uint256,uint256)": FunctionFragment;
-    "swapRouter()": FunctionFragment;
     "transferCreatorship(address)": FunctionFragment;
     "withdrawCartridges(address,uint256)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "burnFee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "buyCartridge",
     values: [string, BigNumberish]
@@ -57,6 +55,10 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "platformFee",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "raisedAmount",
     values: [string]
   ): string;
@@ -73,10 +75,6 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     values: [string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "swapRouter",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "transferCreatorship",
     values: [string]
   ): string;
@@ -85,7 +83,6 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
 
-  decodeFunctionResult(functionFragment: "burnFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "buyCartridge",
     data: BytesLike
@@ -105,6 +102,10 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "platformFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "raisedAmount",
     data: BytesLike
   ): Result;
@@ -117,7 +118,6 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     functionFragment: "sendCartridgeToStore",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "swapRouter", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferCreatorship",
     data: BytesLike
@@ -208,8 +208,6 @@ export class HashupStore extends BaseContract {
   interface: HashupStoreInterface;
 
   functions: {
-    burnFee(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
@@ -231,7 +229,7 @@ export class HashupStore extends BaseContract {
     ): Promise<
       [BigNumber, BigNumber, BigNumber] & {
         toCreator: BigNumber;
-        toBurn: BigNumber;
+        toPlatform: BigNumber;
         toReferrer: BigNumber;
       }
     >;
@@ -244,6 +242,8 @@ export class HashupStore extends BaseContract {
     hashToken(overrides?: CallOverrides): Promise<[string]>;
 
     paymentToken(overrides?: CallOverrides): Promise<[string]>;
+
+    platformFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     raisedAmount(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -261,8 +261,6 @@ export class HashupStore extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    swapRouter(overrides?: CallOverrides): Promise<[string]>;
-
     transferCreatorship(
       _newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -274,8 +272,6 @@ export class HashupStore extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
-
-  burnFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   "buyCartridge(address,uint256)"(
     _cartridgeAddress: string,
@@ -298,7 +294,7 @@ export class HashupStore extends BaseContract {
   ): Promise<
     [BigNumber, BigNumber, BigNumber] & {
       toCreator: BigNumber;
-      toBurn: BigNumber;
+      toPlatform: BigNumber;
       toReferrer: BigNumber;
     }
   >;
@@ -311,6 +307,8 @@ export class HashupStore extends BaseContract {
   hashToken(overrides?: CallOverrides): Promise<string>;
 
   paymentToken(overrides?: CallOverrides): Promise<string>;
+
+  platformFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   raisedAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -325,8 +323,6 @@ export class HashupStore extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  swapRouter(overrides?: CallOverrides): Promise<string>;
-
   transferCreatorship(
     _newCreator: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -339,8 +335,6 @@ export class HashupStore extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    burnFee(overrides?: CallOverrides): Promise<BigNumber>;
-
     "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
@@ -362,7 +356,7 @@ export class HashupStore extends BaseContract {
     ): Promise<
       [BigNumber, BigNumber, BigNumber] & {
         toCreator: BigNumber;
-        toBurn: BigNumber;
+        toPlatform: BigNumber;
         toReferrer: BigNumber;
       }
     >;
@@ -376,6 +370,8 @@ export class HashupStore extends BaseContract {
 
     paymentToken(overrides?: CallOverrides): Promise<string>;
 
+    platformFee(overrides?: CallOverrides): Promise<BigNumber>;
+
     raisedAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     reflinkAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -388,8 +384,6 @@ export class HashupStore extends BaseContract {
       _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    swapRouter(overrides?: CallOverrides): Promise<string>;
 
     transferCreatorship(
       _newCreator: string,
@@ -474,8 +468,6 @@ export class HashupStore extends BaseContract {
   };
 
   estimateGas: {
-    burnFee(overrides?: CallOverrides): Promise<BigNumber>;
-
     "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
@@ -505,6 +497,8 @@ export class HashupStore extends BaseContract {
 
     paymentToken(overrides?: CallOverrides): Promise<BigNumber>;
 
+    platformFee(overrides?: CallOverrides): Promise<BigNumber>;
+
     raisedAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     reflinkAmount(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -517,8 +511,6 @@ export class HashupStore extends BaseContract {
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    swapRouter(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferCreatorship(
       _newCreator: string,
@@ -533,8 +525,6 @@ export class HashupStore extends BaseContract {
   };
 
   populateTransaction: {
-    burnFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     "buyCartridge(address,uint256)"(
       _cartridgeAddress: string,
       _amount: BigNumberish,
@@ -564,6 +554,8 @@ export class HashupStore extends BaseContract {
 
     paymentToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    platformFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     raisedAmount(
       arg0: string,
       overrides?: CallOverrides
@@ -582,8 +574,6 @@ export class HashupStore extends BaseContract {
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    swapRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferCreatorship(
       _newCreator: string,
