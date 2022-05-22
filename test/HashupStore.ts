@@ -49,7 +49,6 @@ describe("HashupStore", async () => {
 		await testToken.deployed();
 
 		hashupStore = await HashupStoreFactory.deploy(
-			hashupToken.address,
 			testToken.address
 		);
 		await hashupStore.deployed();
@@ -70,11 +69,6 @@ describe("HashupStore", async () => {
 	describe("constructor()", async () => {
 		it("should set creator properly", async () => {
 			expect(await hashupStore.creator()).to.be.equal(owner.address);
-		});
-		it("should set hash token properly", async () => {
-			expect(await hashupStore.hashToken()).to.be.equal(
-				hashupToken.address
-			);
 		});
 		it("should set payment token properly", async () => {
 			expect(await hashupStore.paymentToken()).to.be.equal(

@@ -25,7 +25,6 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     "creator()": FunctionFragment;
     "distributePayment(uint256)": FunctionFragment;
     "getCartridgePrice(address)": FunctionFragment;
-    "hashToken()": FunctionFragment;
     "paymentToken()": FunctionFragment;
     "platformFee()": FunctionFragment;
     "raisedAmount(address)": FunctionFragment;
@@ -49,7 +48,6 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     functionFragment: "getCartridgePrice",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "hashToken", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "paymentToken",
     values?: undefined
@@ -96,7 +94,6 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     functionFragment: "getCartridgePrice",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "hashToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "paymentToken",
     data: BytesLike
@@ -239,8 +236,6 @@ export class HashupStore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { price: BigNumber }>;
 
-    hashToken(overrides?: CallOverrides): Promise<[string]>;
-
     paymentToken(overrides?: CallOverrides): Promise<[string]>;
 
     platformFee(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -304,8 +299,6 @@ export class HashupStore extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  hashToken(overrides?: CallOverrides): Promise<string>;
-
   paymentToken(overrides?: CallOverrides): Promise<string>;
 
   platformFee(overrides?: CallOverrides): Promise<BigNumber>;
@@ -365,8 +358,6 @@ export class HashupStore extends BaseContract {
       _cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    hashToken(overrides?: CallOverrides): Promise<string>;
 
     paymentToken(overrides?: CallOverrides): Promise<string>;
 
@@ -493,8 +484,6 @@ export class HashupStore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    hashToken(overrides?: CallOverrides): Promise<BigNumber>;
-
     paymentToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     platformFee(overrides?: CallOverrides): Promise<BigNumber>;
@@ -549,8 +538,6 @@ export class HashupStore extends BaseContract {
       _cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    hashToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     paymentToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

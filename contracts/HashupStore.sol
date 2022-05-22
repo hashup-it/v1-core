@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 // HashUp Contracts V1
-
 pragma solidity ^0.8;
 
 import "hardhat/console.sol";
@@ -16,23 +15,28 @@ contract HashupStore is Creatorship {
 	uint256 public constant platformFee = 20;
 
 	address public paymentToken;
-	address public hashToken;
 
-	event SentToStore(address cartridgeAddress, uint256 price, uint256 amount);
+	event SentToStore(
+		address cartridgeAddress,
+		uint256 price, 
+		uint256 amount
+	);
 	event CartridgesBought(
 		address cartridgeAddress,
 		uint256 price,
 		uint256 amount
 	);
-	event CartridgesWithdrawn(address cartridgeAddress, uint256 amount);
+	event CartridgesWithdrawn(
+		address cartridgeAddress, 
+		uint256 amount
+	);
 
 	mapping(address => uint256) public raisedAmount;
 	mapping(address => uint256) public reflinkAmount;
 	mapping(address => uint256) private cartridgePrices;
 
-	constructor(address _hashToken, address _paymentToken) {
+	constructor(address _paymentToken) {
 		paymentToken = _paymentToken;
-		hashToken = _hashToken;
 	}
 
 	/**
@@ -45,7 +49,6 @@ contract HashupStore is Creatorship {
 		);
 		_;
 	}
-
 
 	/**
 	 * @notice Sets your Cartridge Token for sale, must be its creator.
@@ -155,11 +158,7 @@ contract HashupStore is Creatorship {
 
 		// swap tokens between creator and buyer
 		cartridge.transfer(msg.sender, _amount);
-		paymentToken.transferFrom(
-			msg.sender,
-			cartridge.creator(),
-			toCreator
-		);
+		paymentToken.transferFrom(msg.sender, cartridge.creator(), toCreator);
 		paymentToken.transferFrom(
 			msg.sender,
 			address(this),
