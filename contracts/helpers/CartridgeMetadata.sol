@@ -24,7 +24,7 @@ contract CartridgeMetadata is Creatorship {
 	string private _metadataUrl;
 
 	/**
-	 * @dev Initializes the Cartridge Contract and sets 
+	 * @dev Initializes the Cartridge Contract and sets
 	 * correct color for provided supply and metadata.
 	 */
 	constructor(
@@ -60,25 +60,33 @@ contract CartridgeMetadata is Creatorship {
 		return _decimals;
 	}
 
-	/** 
-	 * @dev see _getColorForSupply function for details
+	/**
+	 * @dev Returns the color of cartridge. see _getColorForSupply function for details
 	 */
 	function color() public view returns (string memory) {
 		return _color;
 	}
 
+	/**
+	 * @dev Returns the name of the cartridge.
+	 */
 	function name() public view returns (string memory) {
 		return _name;
 	}
 
+	/**
+	 * @dev Returns the symbol of the cartridge.
+	 */
 	function symbol() public view returns (string memory) {
 		return _symbol;
 	}
 
+	/**
+	 * @dev Returns the URL of other cartridge metadata
+	 */
 	function metadataUrl() public view returns (string memory) {
 		return _metadataUrl;
 	}
-
 
 	/**
 	 * @dev Returns Cartridge color for specified supply. There are three types
