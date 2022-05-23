@@ -23,11 +23,10 @@ contract CartridgeMetadata is Creatorship {
 	// Other Metadata URL
 	string private _metadataUrl;
 
-
-    /**
-     * @dev Initializes the Cartridge Contract and sets  
+	/**
+	 * @dev Initializes the Cartridge Contract and sets 
 	 * correct color for provided supply and metadata.
-     */
+	 */
 	constructor(
 		string memory name_,
 		string memory symbol_,
