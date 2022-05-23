@@ -130,7 +130,7 @@ export class CartridgeMetadata extends BaseContract {
     name(overrides?: CallOverrides): Promise<[string]>;
 
     setMetadata(
-      _metadataUrl: string,
+      newMetadata: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -153,7 +153,7 @@ export class CartridgeMetadata extends BaseContract {
   name(overrides?: CallOverrides): Promise<string>;
 
   setMetadata(
-    _metadataUrl: string,
+    newMetadata: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -175,10 +175,7 @@ export class CartridgeMetadata extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<string>;
 
-    setMetadata(
-      _metadataUrl: string,
-      overrides?: CallOverrides
-    ): Promise<string>;
+    setMetadata(newMetadata: string, overrides?: CallOverrides): Promise<void>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
@@ -218,7 +215,7 @@ export class CartridgeMetadata extends BaseContract {
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
     setMetadata(
-      _metadataUrl: string,
+      newMetadata: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -242,7 +239,7 @@ export class CartridgeMetadata extends BaseContract {
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setMetadata(
-      _metadataUrl: string,
+      newMetadata: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

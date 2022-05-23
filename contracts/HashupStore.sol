@@ -16,20 +16,15 @@ contract HashupStore is Creatorship {
 
 	address public paymentToken;
 
-	event SentToStore(
-		address cartridgeAddress,
-		uint256 price, 
-		uint256 amount
-	);
+	event SentToStore(address cartridgeAddress, uint256 price, uint256 amount);
+
 	event CartridgesBought(
 		address cartridgeAddress,
 		uint256 price,
 		uint256 amount
 	);
-	event CartridgesWithdrawn(
-		address cartridgeAddress, 
-		uint256 amount
-	);
+
+	event CartridgesWithdrawn(address cartridgeAddress, uint256 amount);
 
 	mapping(address => uint256) public raisedAmount;
 	mapping(address => uint256) public reflinkAmount;
