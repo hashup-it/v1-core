@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// HashUp Contracts v1
+// HashUp Contracts V1
 pragma solidity ^0.8.0;
 
 import "./Creatorship.sol";
@@ -61,7 +61,7 @@ contract CartridgeMetadata is Creatorship {
 	}
 
 	/**
-	 * @dev Returns the color of cartridge. see _getColorForSupply function for details
+	 * @dev Returns the color of cartridge. See {_getColorForSupply} function for details
 	 */
 	function color() public view returns (string memory) {
 		return _color;

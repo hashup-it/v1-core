@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 
 abstract contract Creatorship {
+	// Address of creator
 	address private _creator;
 
 	event OwnershipTransferred(
@@ -11,14 +12,23 @@ abstract contract Creatorship {
 		address indexed newOwner
 	);
 
+	/**
+	 * @dev Initializes creator to contract deployer
+	 */
 	constructor() {
 		_transferCreatorship(msg.sender);
 	}
 
-	function creator() public view virtual returns (address) {
+	/**
+	 * @dev Returns the creator
+	 */
+	function creator() public view returns (address) {
 		return _creator;
 	}
 
+	/**
+	 * @dev Requires caller to be creator
+	 */
 	modifier onlyCreator() {
 		require(
 			creator() == msg.sender,
@@ -27,19 +37,27 @@ abstract contract Creatorship {
 		_;
 	}
 
-	function transferCreatorship(address _newCreator)
-		public
-		virtual
-		onlyCreator
-	{
+	/**
+	 * @dev See {_transferOwnership}
+	 *
+	 * Requirements:
+	 * - newCreator cannot be zero address
+	 * - the caller must be creator
+	 */
+	function transferCreatorship(address newCreator) public onlyCreator {
 		require(
-			_newCreator != address(0),
+			newCreator != address(0),
 			"HashupCreatorship: cannot set creator to zero address"
 		);
-		_transferCreatorship(_newCreator);
+		_transferCreatorship(newCreator);
 	}
 
-	function _transferCreatorship(address _newCreator) internal virtual {
+	/**
+	 * @dev Transfers ownership to new creator
+	 *
+	 * Emits {OwnershipTransferred} event.
+	 */
+	function _transferCreatorship(address _newCreator) private {
 		address previousCreator = _creator;
 		_creator = _newCreator;
 		emit OwnershipTransferred(previousCreator, _newCreator);
