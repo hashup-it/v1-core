@@ -95,7 +95,7 @@ export class Creatorship extends BaseContract {
     creator(overrides?: CallOverrides): Promise<[string]>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -103,7 +103,7 @@ export class Creatorship extends BaseContract {
   creator(overrides?: CallOverrides): Promise<string>;
 
   transferCreatorship(
-    _newCreator: string,
+    newCreator: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -111,7 +111,7 @@ export class Creatorship extends BaseContract {
     creator(overrides?: CallOverrides): Promise<string>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -138,7 +138,7 @@ export class Creatorship extends BaseContract {
     creator(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -147,7 +147,7 @@ export class Creatorship extends BaseContract {
     creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

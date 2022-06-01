@@ -48,9 +48,7 @@ describe("HashupStore", async () => {
 		testToken = await TestTokenFactory.connect(userTwo).deploy();
 		await testToken.deployed();
 
-		hashupStore = await HashupStoreFactory.deploy(
-			testToken.address
-		);
+		hashupStore = await HashupStoreFactory.deploy(testToken.address);
 		await hashupStore.deployed();
 
 		hashupCartridge = await HashupCartridgeFactory.connect(
@@ -170,8 +168,26 @@ describe("HashupStore", async () => {
 			);
 			expect(amountTaken).to.be.equal(200);
 		});
+		it("should revert if sending second time", async () => {
+			await hashupCartridge
+				.connect(developer)
+				.approve(hashupStore.address, 200);
+			await hashupStore
+				.connect(developer)
+				.sendCartridgeToStore(hashupCartridge.address, 100, 200);
+			await hashupCartridge
+				.connect(developer)
+				.approve(hashupStore.address, 200);
+			await expect(
+				hashupStore
+					.connect(developer)
+					.sendCartridgeToStore(hashupCartridge.address, 100, 200)
+			).to.be.revertedWith("HashupStore: Can't set for sale second time");
+		});
 	});
-	
+	describe("setCartridgePrice()", async () => {
+
+	})
 	describe("buyCartridge()", async () => {
 		const amountBought = 100;
 		const price = 100;
@@ -188,7 +204,7 @@ describe("HashupStore", async () => {
 				.connect(userTwo)
 				.approve(hashupStore.address, price * amountBought);
 		});
-		
+
 		it("distributes payment properly", async () => {
 			const balanceBefore = await testToken.balanceOf(userTwo.address);
 			const cartridgesBefore = await hashupCartridge.balanceOf(
@@ -209,7 +225,7 @@ describe("HashupStore", async () => {
 			expect(await testToken.balanceOf(developer.address)).to.be.equal(
 				amountBought * price * (3 / 4)
 			);
-			expect(await testToken.balanceOf(hashupStore.address)).to.be.equal(
+			expect(await testToken.balanceOf(owner.address)).to.be.equal(
 				amountBought * price * (1 / 4)
 			);
 		});
@@ -225,7 +241,7 @@ describe("HashupStore", async () => {
 					amountBought,
 					userOne.address
 				);
-				
+
 			expect(
 				await hashupCartridge.balanceOf(userTwo.address)
 			).to.be.equal(cartridgesBefore.add(amountBought));
@@ -236,7 +252,7 @@ describe("HashupStore", async () => {
 			expect(await testToken.balanceOf(developer.address)).to.be.equal(
 				amountBought * price * (3 / 4)
 			);
-			expect(await testToken.balanceOf(hashupStore.address)).to.be.equal(
+			expect(await testToken.balanceOf(owner.address)).to.be.equal(
 				amountBought * price * (1 / 5)
 			);
 			expect(await testToken.balanceOf(userOne.address)).to.be.equal(
@@ -247,38 +263,56 @@ describe("HashupStore", async () => {
 			await testToken
 				.connect(userTwo)
 				.approve(hashupStore.address, ethers.constants.MaxUint256);
-			await expect(hashupStore
-				.connect(userTwo)
-				["buyCartridge(address,uint256,address)"](
-					hashupCartridge.address,
-					amountBought*1000,
-					userOne.address
-				)).to.be.revertedWith('HashupCartridge: insufficient token balance');
-		})
+			await expect(
+				hashupStore
+					.connect(userTwo)
+					["buyCartridge(address,uint256,address)"](
+						hashupCartridge.address,
+						amountBought * 1000,
+						userOne.address
+					)
+			).to.be.revertedWith(
+				"HashupCartridge: insufficient token balance"
+			);
+		});
 		it("should revert if not enough test token with referral", async () => {
 			await testToken
 				.connect(userTwo)
 				.approve(hashupStore.address, ethers.constants.MaxUint256);
-			await testToken.connect(userTwo).transfer(userOne.address, await testToken.balanceOf(userTwo.address))
-			await expect(hashupStore
+			await testToken
 				.connect(userTwo)
-				["buyCartridge(address,uint256,address)"](
-					hashupCartridge.address,
-					amountBought,
-					userOne.address
-				)).to.be.revertedWith('ERC20: transfer amount exceeds balance');
-		})
+				.transfer(
+					userOne.address,
+					await testToken.balanceOf(userTwo.address)
+				);
+			await expect(
+				hashupStore
+					.connect(userTwo)
+					["buyCartridge(address,uint256,address)"](
+						hashupCartridge.address,
+						amountBought,
+						userOne.address
+					)
+			).to.be.revertedWith("ERC20: transfer amount exceeds balance");
+		});
 		it("should revert if not enough test token", async () => {
 			await testToken
 				.connect(userTwo)
 				.approve(hashupStore.address, ethers.constants.MaxUint256);
-			await testToken.connect(userTwo).transfer(userOne.address, await testToken.balanceOf(userTwo.address))
-			await expect(hashupStore
+			await testToken
 				.connect(userTwo)
-				["buyCartridge(address,uint256)"](
-					hashupCartridge.address,
-					amountBought
-				)).to.be.revertedWith('ERC20: transfer amount exceeds balance');
-		})
+				.transfer(
+					userOne.address,
+					await testToken.balanceOf(userTwo.address)
+				);
+			await expect(
+				hashupStore
+					.connect(userTwo)
+					["buyCartridge(address,uint256)"](
+						hashupCartridge.address,
+						amountBought
+					)
+			).to.be.revertedWith("ERC20: transfer amount exceeds balance");
+		});
 	});
 });

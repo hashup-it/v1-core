@@ -1,17 +1,34 @@
 // SPDX-License-Identifier: MIT
-// HashUp Contracts V1 
-
+// HashUp Contracts V1
 pragma solidity ^0.8;
 
 import "./helpers/Creatorship.sol";
 
-/// @title User profiles contract for HashUp platform
-/// @author Hashup
-/// @notice You can use this contract to customise your profile on HashUp
+/**
+ * @dev HashUp profile Contract, used for managing profiles,
+ * in future we want to use it to sending ERC20 Cartridges
+ * providing only friend name and more
+ */
 contract HashupGamerProfile is Creatorship {
+	// Size of reward for registration
 	uint256 constant reward = 10;
+
+	// Reward for reffering users
 	uint256 constant refReward = 5;
 
+	// Mapping user to whether he got reward
+	mapping(address => bool) public gotReward;
+
+	// Mapping address to amount of points
+	mapping(address => uint256) public pointsEarned;
+
+	// Mapping nickname to user address
+	mapping(string => address) public nicknameOwners;
+
+	// Mapping address to profile data
+	mapping(address => Gamer) public profiles;
+
+	// Events
 	event UpdatedProfile(
 		address user,
 		string newNickname,
@@ -21,8 +38,10 @@ contract HashupGamerProfile is Creatorship {
 		string newSocials,
 		address referrer
 	);
+
 	event VerifiedUser(address user, bool value);
 
+	// Gamer profile structure
 	struct Gamer {
 		string nickname;
 		string color;
@@ -32,36 +51,29 @@ contract HashupGamerProfile is Creatorship {
 		bool isVerified;
 	}
 
-	mapping(address => bool) public gotReward;
-	mapping(address => uint256) public pointsEarned;
-
-	mapping(string => address) public nicknameOwners;
-	mapping(address => Gamer) public profiles;
-
-	/// @notice Update profile data and get reward points for first time
-	/// @dev Decided to set everything at once for simplicity
-	/// @param _nickname Nickname on HashUp
-	/// @param _color Hex profile theme color
-	/// @param _avatar URL of profile image
-	/// @param _avatar Text description of profile
-	/// @param _socials Stringified JSON social media data ex. "{"media" : "url", ...}"
+	/**
+	 * @dev Updates game profile with provided data,
+	 *
+	 * NOTE: Must provide everything for simplicity of the
+	 * registration process, may change it in future versions
+	 */
 	function updateProfile(
-		string memory _nickname,
-		string memory _color,
-		string memory _avatar,
-		string memory _description,
-		string memory _socials,
-		address _refferer
+		string memory nickname,
+		string memory color,
+		string memory avatar,
+		string memory description,
+		string memory socials,
+		address refferer
 	) public {
 		// update nickname in necessary
-		setNickname(_nickname);
+		setNickname(nickname);
 
 		// update remaining profile data
 		Gamer storage profile = profiles[msg.sender];
-		profile.socials = _socials;
-		profile.description = _description;
-		profile.color = _color;
-		profile.avatar = _avatar;
+		profile.socials = socials;
+		profile.description = description;
+		profile.color = color;
+		profile.avatar = avatar;
 
 		// give reward if not earned yet
 		if (!gotReward[msg.sender]) {
@@ -69,46 +81,55 @@ contract HashupGamerProfile is Creatorship {
 			gotReward[msg.sender] = true;
 			pointsEarned[msg.sender] += reward;
 			// if referrer is not sender or zero address increase points
-			if (_refferer != address(0) && _refferer != msg.sender) {
-				pointsEarned[_refferer] += refReward;
+			if (refferer != address(0) && refferer != msg.sender) {
+				pointsEarned[refferer] += refReward;
 			}
 		}
 
 		emit UpdatedProfile(
 			msg.sender,
-			_nickname,
-			_color,
-			_avatar,
-			_description,
-			_socials,
-			_refferer
+			nickname,
+			color,
+			avatar,
+			description,
+			socials,
+			refferer
 		);
 	}
 
-	/// @notice Verify users on HashUp platform, for ex. Youtubers
-	/// @param _user Address of user we want to modify
-	/// @param _value Whether user should be set to verified or unverified
-	function verifyProfile(address _user, bool _value) public onlyCreator {
-		profiles[_user].isVerified = _value;
-		emit VerifiedUser(_user, _value);
+	/**
+	 * @dev Function to verify user profile, for example
+	 * youtubers or team members.
+	 *
+	 * Requirements:
+	 * - the caller must be creator
+	 */
+	function verifyProfile(address user, bool value) public onlyCreator {
+		profiles[user].isVerified = value;
+		emit VerifiedUser(user, value);
 	}
 
-	/// @dev This function is split from UpdateProfile for simplicity
-	/// @param _nickname Nickname to set or update
-	function setNickname(string memory _nickname) internal {
+	/**
+	 * @dev Split nickname setting function for simplicity,
+	 * if provided the same nickname as before it just passes
+	 *
+	 * Requirements:
+	 * - nickname owner must be zero address or caller
+	 */
+	function setNickname(string memory nickname) internal {
 		//must be non-taken
 		require(
-			nicknameOwners[_nickname] == address(0) ||
-				nicknameOwners[_nickname] == msg.sender,
+			nicknameOwners[nickname] == address(0) ||
+				nicknameOwners[nickname] == msg.sender,
 			"HashupGamerProfile: Provided nickname is taken"
 		);
-		if (nicknameOwners[_nickname] != msg.sender) {
+		if (nicknameOwners[nickname] != msg.sender) {
 			//free up old nickname
 			nicknameOwners[profiles[msg.sender].nickname] = address(0);
 			//set profile nickname
-			profiles[msg.sender].nickname = _nickname;
+			profiles[msg.sender].nickname = nickname;
 			//set nickname owner
-			nicknameOwners[_nickname] = msg.sender;
+			nicknameOwners[nickname] = msg.sender;
 		}
 	}
 }

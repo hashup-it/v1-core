@@ -137,7 +137,7 @@ export class CartridgeMetadata extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -160,7 +160,7 @@ export class CartridgeMetadata extends BaseContract {
   symbol(overrides?: CallOverrides): Promise<string>;
 
   transferCreatorship(
-    _newCreator: string,
+    newCreator: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -180,7 +180,7 @@ export class CartridgeMetadata extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<string>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -222,7 +222,7 @@ export class CartridgeMetadata extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -246,7 +246,7 @@ export class CartridgeMetadata extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

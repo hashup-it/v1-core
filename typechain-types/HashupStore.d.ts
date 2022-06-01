@@ -31,6 +31,7 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     "reflinkAmount(address)": FunctionFragment;
     "reflinkFee()": FunctionFragment;
     "sendCartridgeToStore(address,uint256,uint256)": FunctionFragment;
+    "setCartridgePrice(address,uint256)": FunctionFragment;
     "transferCreatorship(address)": FunctionFragment;
     "withdrawCartridges(address,uint256)": FunctionFragment;
   };
@@ -71,6 +72,10 @@ interface HashupStoreInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "sendCartridgeToStore",
     values: [string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setCartridgePrice",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferCreatorship",
@@ -116,6 +121,10 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setCartridgePrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferCreatorship",
     data: BytesLike
   ): Result;
@@ -128,12 +137,14 @@ interface HashupStoreInterface extends ethers.utils.Interface {
     "CartridgesBought(address,uint256,uint256)": EventFragment;
     "CartridgesWithdrawn(address,uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
-    "SentToStore(address,uint256,uint256)": EventFragment;
+    "PriceChanged(address,uint256)": EventFragment;
+    "SentToStore(address,string,string,string,uint256,string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "CartridgesBought"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "CartridgesWithdrawn"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PriceChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SentToStore"): EventFragment;
 }
 
@@ -153,11 +164,18 @@ export type OwnershipTransferredEvent = TypedEvent<
   [string, string] & { previousOwner: string; newOwner: string }
 >;
 
+export type PriceChangedEvent = TypedEvent<
+  [string, BigNumber] & { cartridgeAddress: string; newPrice: BigNumber }
+>;
+
 export type SentToStoreEvent = TypedEvent<
-  [string, BigNumber, BigNumber] & {
+  [string, string, string, string, BigNumber, string] & {
     cartridgeAddress: string;
+    symbol: string;
+    name: string;
+    color: string;
     price: BigNumber;
-    amount: BigNumber;
+    metadata: string;
   }
 >;
 
@@ -206,22 +224,22 @@ export class HashupStore extends BaseContract {
 
   functions: {
     "buyCartridge(address,uint256)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "buyCartridge(address,uint256,address)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
-      _referrer: string,
+      cartridgeAddress: string,
+      amount: BigNumberish,
+      referrer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     creator(overrides?: CallOverrides): Promise<[string]>;
 
     distributePayment(
-      _totalValue: BigNumberish,
+      totalValue: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber] & {
@@ -232,7 +250,7 @@ export class HashupStore extends BaseContract {
     >;
 
     getCartridgePrice(
-      _cartridgeAddress: string,
+      cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { price: BigNumber }>;
 
@@ -250,14 +268,20 @@ export class HashupStore extends BaseContract {
     reflinkFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     sendCartridgeToStore(
-      _cartridgeAddress: string,
-      _price: BigNumberish,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      price: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setCartridgePrice(
+      cartridgeAddress: string,
+      newPrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -269,22 +293,22 @@ export class HashupStore extends BaseContract {
   };
 
   "buyCartridge(address,uint256)"(
-    _cartridgeAddress: string,
-    _amount: BigNumberish,
+    cartridgeAddress: string,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "buyCartridge(address,uint256,address)"(
-    _cartridgeAddress: string,
-    _amount: BigNumberish,
-    _referrer: string,
+    cartridgeAddress: string,
+    amount: BigNumberish,
+    referrer: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   creator(overrides?: CallOverrides): Promise<string>;
 
   distributePayment(
-    _totalValue: BigNumberish,
+    totalValue: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber] & {
@@ -295,7 +319,7 @@ export class HashupStore extends BaseContract {
   >;
 
   getCartridgePrice(
-    _cartridgeAddress: string,
+    cartridgeAddress: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -310,14 +334,20 @@ export class HashupStore extends BaseContract {
   reflinkFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   sendCartridgeToStore(
-    _cartridgeAddress: string,
-    _price: BigNumberish,
-    _amount: BigNumberish,
+    cartridgeAddress: string,
+    price: BigNumberish,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setCartridgePrice(
+    cartridgeAddress: string,
+    newPrice: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   transferCreatorship(
-    _newCreator: string,
+    newCreator: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -329,22 +359,22 @@ export class HashupStore extends BaseContract {
 
   callStatic: {
     "buyCartridge(address,uint256)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<void>;
 
     "buyCartridge(address,uint256,address)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
-      _referrer: string,
+      cartridgeAddress: string,
+      amount: BigNumberish,
+      referrer: string,
       overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<void>;
 
     creator(overrides?: CallOverrides): Promise<string>;
 
     distributePayment(
-      _totalValue: BigNumberish,
+      totalValue: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber] & {
@@ -355,7 +385,7 @@ export class HashupStore extends BaseContract {
     >;
 
     getCartridgePrice(
-      _cartridgeAddress: string,
+      cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -370,14 +400,20 @@ export class HashupStore extends BaseContract {
     reflinkFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     sendCartridgeToStore(
-      _cartridgeAddress: string,
-      _price: BigNumberish,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      price: BigNumberish,
+      amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<void>;
+
+    setCartridgePrice(
+      cartridgeAddress: string,
+      newPrice: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -439,48 +475,84 @@ export class HashupStore extends BaseContract {
       { previousOwner: string; newOwner: string }
     >;
 
-    "SentToStore(address,uint256,uint256)"(
+    "PriceChanged(address,uint256)"(
       cartridgeAddress?: null,
-      price?: null,
-      amount?: null
+      newPrice?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { cartridgeAddress: string; price: BigNumber; amount: BigNumber }
+      [string, BigNumber],
+      { cartridgeAddress: string; newPrice: BigNumber }
+    >;
+
+    PriceChanged(
+      cartridgeAddress?: null,
+      newPrice?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { cartridgeAddress: string; newPrice: BigNumber }
+    >;
+
+    "SentToStore(address,string,string,string,uint256,string)"(
+      cartridgeAddress?: null,
+      symbol?: null,
+      name?: null,
+      color?: null,
+      price?: null,
+      metadata?: null
+    ): TypedEventFilter<
+      [string, string, string, string, BigNumber, string],
+      {
+        cartridgeAddress: string;
+        symbol: string;
+        name: string;
+        color: string;
+        price: BigNumber;
+        metadata: string;
+      }
     >;
 
     SentToStore(
       cartridgeAddress?: null,
+      symbol?: null,
+      name?: null,
+      color?: null,
       price?: null,
-      amount?: null
+      metadata?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { cartridgeAddress: string; price: BigNumber; amount: BigNumber }
+      [string, string, string, string, BigNumber, string],
+      {
+        cartridgeAddress: string;
+        symbol: string;
+        name: string;
+        color: string;
+        price: BigNumber;
+        metadata: string;
+      }
     >;
   };
 
   estimateGas: {
     "buyCartridge(address,uint256)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "buyCartridge(address,uint256,address)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
-      _referrer: string,
+      cartridgeAddress: string,
+      amount: BigNumberish,
+      referrer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     creator(overrides?: CallOverrides): Promise<BigNumber>;
 
     distributePayment(
-      _totalValue: BigNumberish,
+      totalValue: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getCartridgePrice(
-      _cartridgeAddress: string,
+      cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -495,14 +567,20 @@ export class HashupStore extends BaseContract {
     reflinkFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     sendCartridgeToStore(
-      _cartridgeAddress: string,
-      _price: BigNumberish,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      price: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setCartridgePrice(
+      cartridgeAddress: string,
+      newPrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -515,27 +593,27 @@ export class HashupStore extends BaseContract {
 
   populateTransaction: {
     "buyCartridge(address,uint256)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "buyCartridge(address,uint256,address)"(
-      _cartridgeAddress: string,
-      _amount: BigNumberish,
-      _referrer: string,
+      cartridgeAddress: string,
+      amount: BigNumberish,
+      referrer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     distributePayment(
-      _totalValue: BigNumberish,
+      totalValue: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getCartridgePrice(
-      _cartridgeAddress: string,
+      cartridgeAddress: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -556,14 +634,20 @@ export class HashupStore extends BaseContract {
     reflinkFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     sendCartridgeToStore(
-      _cartridgeAddress: string,
-      _price: BigNumberish,
-      _amount: BigNumberish,
+      cartridgeAddress: string,
+      price: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setCartridgePrice(
+      cartridgeAddress: string,
+      newPrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

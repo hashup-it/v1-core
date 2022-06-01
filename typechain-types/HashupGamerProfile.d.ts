@@ -177,23 +177,23 @@ export class HashupGamerProfile extends BaseContract {
     >;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     updateProfile(
-      _nickname: string,
-      _color: string,
-      _avatar: string,
-      _description: string,
-      _socials: string,
-      _refferer: string,
+      nickname: string,
+      color: string,
+      avatar: string,
+      description: string,
+      socials: string,
+      refferer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     verifyProfile(
-      _user: string,
-      _value: boolean,
+      user: string,
+      value: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -221,23 +221,23 @@ export class HashupGamerProfile extends BaseContract {
   >;
 
   transferCreatorship(
-    _newCreator: string,
+    newCreator: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   updateProfile(
-    _nickname: string,
-    _color: string,
-    _avatar: string,
-    _description: string,
-    _socials: string,
-    _refferer: string,
+    nickname: string,
+    color: string,
+    avatar: string,
+    description: string,
+    socials: string,
+    refferer: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   verifyProfile(
-    _user: string,
-    _value: boolean,
+    user: string,
+    value: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -265,23 +265,23 @@ export class HashupGamerProfile extends BaseContract {
     >;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
     updateProfile(
-      _nickname: string,
-      _color: string,
-      _avatar: string,
-      _description: string,
-      _socials: string,
-      _refferer: string,
+      nickname: string,
+      color: string,
+      avatar: string,
+      description: string,
+      socials: string,
+      refferer: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
     verifyProfile(
-      _user: string,
-      _value: boolean,
+      user: string,
+      value: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -368,23 +368,23 @@ export class HashupGamerProfile extends BaseContract {
     profiles(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     updateProfile(
-      _nickname: string,
-      _color: string,
-      _avatar: string,
-      _description: string,
-      _socials: string,
-      _refferer: string,
+      nickname: string,
+      color: string,
+      avatar: string,
+      description: string,
+      socials: string,
+      refferer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     verifyProfile(
-      _user: string,
-      _value: boolean,
+      user: string,
+      value: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -413,23 +413,23 @@ export class HashupGamerProfile extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     transferCreatorship(
-      _newCreator: string,
+      newCreator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     updateProfile(
-      _nickname: string,
-      _color: string,
-      _avatar: string,
-      _description: string,
-      _socials: string,
-      _refferer: string,
+      nickname: string,
+      color: string,
+      avatar: string,
+      description: string,
+      socials: string,
+      refferer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     verifyProfile(
-      _user: string,
-      _value: boolean,
+      user: string,
+      value: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

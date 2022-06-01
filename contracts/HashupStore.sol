@@ -7,6 +7,9 @@ import "./HashupCartridge.sol";
 import "./helpers/Creatorship.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+/**
+ * @dev HashUp smart contract for selling games
+ */
 contract HashupStore is Creatorship {
 	// Percent of profits for referrer
 	uint256 public constant reflinkFee = 5;
@@ -27,7 +30,14 @@ contract HashupStore is Creatorship {
 	mapping(address => uint256) private cartridgePrices;
 
 	// Events
-	event SentToStore(address cartridgeAddress, uint256 price, uint256 amount);
+	event SentToStore(
+		address cartridgeAddress,
+		string symbol,
+		string name,
+		string color,
+		uint256 price,
+		string metadata
+	);
 
 	event CartridgesBought(
 		address cartridgeAddress,
@@ -36,6 +46,8 @@ contract HashupStore is Creatorship {
 	);
 
 	event CartridgesWithdrawn(address cartridgeAddress, uint256 amount);
+
+	event PriceChanged(address cartridgeAddress, uint256 newPrice);
 
 	/**
 	 * @dev Initializes contract with `paymentToken` address
@@ -55,21 +67,38 @@ contract HashupStore is Creatorship {
 		_;
 	}
 
+	/**
+	 * @dev Set cartridges for sale. To supply more Cartridges
+	 * later just send them to HashupStore address, to change
+	 * current price check `setCartridgePrice` method.
+	 *
+	 * Requirements:
+	 * - caller must be Cartridge creator
+	 * - price must be 0 (Not set for sale before)
+	 */
 	function sendCartridgeToStore(
 		address cartridgeAddress,
 		uint256 price,
 		uint256 amount
 	) public onlyCartridgeCreator(cartridgeAddress) {
-		// Take allowed Cartridges from sender and send it to store
-		HashupCartridge(cartridgeAddress).transferFrom(
-			msg.sender,
-			address(this),
-			amount
+		require(
+			cartridgePrices[cartridgeAddress] == 0,
+			"HashupStore: Can't set for sale second time"
 		);
+		// Take allowed Cartridges from sender and send it to store
+		HashupCartridge cartridge = HashupCartridge(cartridgeAddress);
+		cartridge.transferFrom(msg.sender, address(this), amount);
 		// Set Cartridge price
 		cartridgePrices[cartridgeAddress] = price;
 
-		emit SentToStore(cartridgeAddress, price, amount);
+		emit SentToStore(
+			cartridgeAddress,
+			cartridge.symbol(),
+			cartridge.name(),
+			cartridge.color(),
+			price,
+			cartridge.metadataUrl()
+		);
 	}
 
 	function withdrawCartridges(address _cartridgeAddress, uint256 _amount)
@@ -84,25 +113,50 @@ contract HashupStore is Creatorship {
 		if (availableAmount >= _amount) {
 			// Return all cartridges
 			cartridge.transfer(msg.sender, _amount);
+			emit CartridgesWithdrawn(_cartridgeAddress, _amount);
 			return _amount;
 		} else {
 			// Return as much as possible
 			cartridge.transfer(msg.sender, availableAmount);
+			emit CartridgesWithdrawn(_cartridgeAddress, availableAmount);
 			return availableAmount;
 		}
 	}
 
-	function getCartridgePrice(address _cartridgeAddress)
+	/**
+	 * @dev Returns unit price for specified Cartridge
+	 */
+	function getCartridgePrice(address cartridgeAddress)
 		public
 		view
 		returns (uint256 price)
 	{
-		return cartridgePrices[_cartridgeAddress];
+		return cartridgePrices[cartridgeAddress];
 	}
 
-	function distributePayment(uint256 _totalValue)
+	/**
+	 * @dev Updates cartridge price
+	 *
+	 * Requirements:
+	 * - caller must be Cartridge creator
+	 * - `newPrice` cant be 0
+	 */
+	function setCartridgePrice(address cartridgeAddress, uint256 newPrice)
 		public
-		view
+		onlyCartridgeCreator(cartridgeAddress)
+	{
+		require(newPrice != 0, "HashupStore: new price cant be 0");
+		cartridgePrices[cartridgeAddress] = newPrice;
+		emit PriceChanged(cartridgeAddress, newPrice);
+	}
+
+	/**
+	 * @dev Splits number between creator, platform and
+	 * referrer based on fee percentage and returns result
+	 */
+	function distributePayment(uint256 totalValue)
+		public
+		pure
 		returns (
 			uint256 toCreator,
 			uint256 toPlatform,
@@ -110,20 +164,29 @@ contract HashupStore is Creatorship {
 		)
 	{
 		// Split provided price between platform, referrer and Cartridge creator
-		uint256 platform = (_totalValue * platformFee) / 100;
-		uint256 ref = (_totalValue * reflinkFee) / 100;
-		uint256 left = _totalValue - ref - platform;
+		uint256 referrerPart = (totalValue * reflinkFee) / 100;
+		uint256 platformPart = (totalValue * platformFee) / 100;
+		uint256 creatorPart = totalValue - referrerPart - platformPart;
 
-		return (left, platform, ref);
+		return (creatorPart, platformPart, referrerPart);
 	}
 
-	function buyCartridge(address _cartridgeAddress, uint256 _amount) public {
+	/**
+	 * @dev Exchange payment token for Cartridge and send
+	 * fee to platform
+	 *
+	 * Requirements:
+	 * - Store must have enough cartridges
+	 * - Buyer must approve enough paymentToken to Store
+	 * - Buyer must have enough paymentToken
+	 */
+	function buyCartridge(address cartridgeAddress, uint256 amount) public {
 		// Initialize tokens
 		IERC20 paymentToken = IERC20(paymentToken);
-		HashupCartridge cartridge = HashupCartridge(_cartridgeAddress);
+		HashupCartridge cartridge = HashupCartridge(cartridgeAddress);
 
 		// Calculate payment distribution
-		uint256 totalPrice = getCartridgePrice(_cartridgeAddress) * _amount;
+		uint256 totalPrice = getCartridgePrice(cartridgeAddress) * amount;
 		(
 			uint256 toCreator,
 			uint256 toPlatform,
@@ -131,7 +194,7 @@ contract HashupStore is Creatorship {
 		) = distributePayment(totalPrice);
 
 		// Send cartridges from HashupStore to buyer
-		cartridge.transfer(msg.sender, _amount);
+		cartridge.transfer(msg.sender, amount);
 
 		// Send payment token to creator
 		paymentToken.transferFrom(msg.sender, cartridge.creator(), toCreator);
@@ -139,35 +202,30 @@ contract HashupStore is Creatorship {
 		// Send platform + refferer part to itself, because no referrer
 		paymentToken.transferFrom(
 			msg.sender,
-			address(this),
+			creator(),
 			toPlatform + toReferrer
 		);
 
 		// Increase raised amount count
-		raisedAmount[_cartridgeAddress] += toCreator;
+		raisedAmount[cartridgeAddress] += toCreator;
 
-		emit CartridgesBought(_cartridgeAddress, totalPrice, _amount);
+		emit CartridgesBought(cartridgeAddress, totalPrice, amount);
 	}
 
 	/**
-	 * @notice Exchange PaymentToken for Cartridge Tokens with refferal fee
-	 * @dev Must set correct allowance before using it,
-	 * @param _cartridgeAddress Address of Cartridge token bought
-	 * @param _amount Amount of Cartridge tokens bough
-	 * @param _referrer Address of user that will get {reflink}% refferer fee
-	 * @return success Whether transaction succeded
+	 * @dev Overloaded 'buyCartridge' that includes refferer address
 	 */
 	function buyCartridge(
-		address _cartridgeAddress,
-		uint256 _amount,
-		address _referrer
-	) public returns (bool success) {
+		address cartridgeAddress,
+		uint256 amount,
+		address referrer
+	) public {
 		// Initialize tokens
 		IERC20 paymentToken = IERC20(paymentToken);
-		HashupCartridge cartridge = HashupCartridge(_cartridgeAddress);
+		HashupCartridge cartridge = HashupCartridge(cartridgeAddress);
 
 		// Calculate payment distribution
-		uint256 totalPrice = getCartridgePrice(_cartridgeAddress) * _amount;
+		uint256 totalPrice = getCartridgePrice(cartridgeAddress) * amount;
 		(
 			uint256 toCreator,
 			uint256 toPlatform,
@@ -175,21 +233,21 @@ contract HashupStore is Creatorship {
 		) = distributePayment(totalPrice);
 
 		// Send cartridges from HashupStore to buyer
-		cartridge.transfer(msg.sender, _amount);
+		cartridge.transfer(msg.sender, amount);
 
 		// Send payment token to creator
 		paymentToken.transferFrom(msg.sender, cartridge.creator(), toCreator);
 
 		// Send refferal part to referrer
-		paymentToken.transferFrom(msg.sender, _referrer, toReferrer);
+		paymentToken.transferFrom(msg.sender, referrer, toReferrer);
 
-		// Send rest to platoform
-		paymentToken.transferFrom(msg.sender, address(this), toPlatform);
+		// Send rest to platform
+		paymentToken.transferFrom(msg.sender, creator(), toPlatform);
 
 		// Increase raised and reflink amount count
-		raisedAmount[_cartridgeAddress] += toCreator;
-		reflinkAmount[_cartridgeAddress] += toReferrer;
+		raisedAmount[cartridgeAddress] += toCreator;
+		reflinkAmount[cartridgeAddress] += toReferrer;
 
-		emit CartridgesBought(_cartridgeAddress, totalPrice, _amount);
+		emit CartridgesBought(cartridgeAddress, totalPrice, amount);
 	}
 }

@@ -61,7 +61,8 @@ contract CartridgeMetadata is Creatorship {
 	}
 
 	/**
-	 * @dev Returns the color of cartridge. See {_getColorForSupply} function for details
+	 * @dev Returns the color of cartridge. See {_getColorForSupply}
+	 * function for details
 	 */
 	function color() public view returns (string memory) {
 		return _color;

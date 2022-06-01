@@ -103,7 +103,7 @@ describe("HashupCartridge", async () => {
 			expect(setDecimals).to.be.equal(2);
 		});
 		it("should set fee correctly", async () => {
-			const setFeeForCreator = await hashupCartridge.feeForCreator();
+			const setFeeForCreator = await hashupCartridge.creatorFee();
 			expect(setFeeForCreator).to.be.equal(100);
 		});
 	});
@@ -118,11 +118,41 @@ describe("HashupCartridge", async () => {
 		});
 	});
 	describe("transferFrom()", async () => {
+		it("should revert for normal users at start", async () => {
+			await hashupCartridge
+				.connect(owner)
+				.transfer(userTwo.address, 1000);
+			await hashupCartridge
+				.connect(userTwo)
+				.approve(userOne.address, 1000);
+			await expect(
+				hashupCartridge
+					.connect(userOne)
+					.transferFrom(userTwo.address, userOne.address, 1000)
+			).to.be.revertedWith("HashupCartridge: transferFrom is closed");
+		});
+		it("should not revert for normal users after unblocking it", async () => {
+			await hashupCartridge.connect(owner).switchSale();
+			await hashupCartridge
+				.connect(owner)
+				.transfer(userTwo.address, 1000);
+			await hashupCartridge
+				.connect(userTwo)
+				.approve(userOne.address, 1000);
+			await hashupCartridge
+				.connect(userOne)
+				.transferFrom(userTwo.address, userOne.address, 1000);
+			expect(
+				await hashupCartridge.balanceOf(userOne.address)
+			).to.be.equal(900);
+		});
 		it("should let user spend allowed cartridges and decrease allowance", async () => {
 			const balanceBefore = await hashupCartridge.balanceOf(
 				owner.address
 			);
-			await hashupCartridge.connect(owner).approve(userOne.address, 1000);
+			await hashupCartridge
+				.connect(owner)
+				.approve(userOne.address, 1000);
 			const allowanceBefore = await hashupCartridge.allowance(
 				owner.address,
 				userOne.address
@@ -131,7 +161,9 @@ describe("HashupCartridge", async () => {
 			await hashupCartridge
 				.connect(userOne)
 				.transferFrom(owner.address, userTwo.address, 100);
-			const balanceAfter = await hashupCartridge.balanceOf(owner.address);
+			const balanceAfter = await hashupCartridge.balanceOf(
+				owner.address
+			);
 			const allowanceAfter = await hashupCartridge.allowance(
 				owner.address,
 				userOne.address
@@ -141,7 +173,9 @@ describe("HashupCartridge", async () => {
 			expect(allowanceAfter).to.be.equal(Number(allowanceBefore) - 100);
 		});
 		it("should revert if from zero address", async () => {
-			await hashupCartridge.connect(owner).approve(userOne.address, 1000);
+			await hashupCartridge
+				.connect(owner)
+				.approve(userOne.address, 1000);
 			await expect(
 				hashupCartridge
 					.connect(userOne)
@@ -181,7 +215,9 @@ describe("HashupCartridge", async () => {
 			).to.be.equal(100);
 		});
 		it("should revert if allowance is too low", async () => {
-			await hashupCartridge.connect(owner).approve(userOne.address, 1000);
+			await hashupCartridge
+				.connect(owner)
+				.approve(userOne.address, 1000);
 			await expect(
 				hashupCartridge
 					.connect(userOne)
@@ -200,29 +236,45 @@ describe("HashupCartridge", async () => {
 						userTwo.address,
 						"10000000000000"
 					)
-			).to.be.revertedWith("HashupCartridge: insufficient token balance");
+			).to.be.revertedWith(
+				"HashupCartridge: insufficient token balance"
+			);
 		});
 	});
 	describe("transferCreatorship()", async () => {
 		it("should let creator transfer creatorship", async () => {
 			await hashupCartridge.transferCreatorship(userTwo.address);
-			expect(await hashupCartridge.creator()).to.be.equal(userTwo.address)
-		})
+			expect(await hashupCartridge.creator()).to.be.equal(
+				userTwo.address
+			);
+		});
 		it("should revert if not creator", async () => {
-			await expect(hashupCartridge.connect(userOne).transferCreatorship(userTwo.address)).to.be.revertedWith("HashupCreatorship: caller is not creator");
-		})
+			await expect(
+				hashupCartridge
+					.connect(userOne)
+					.transferCreatorship(userTwo.address)
+			).to.be.revertedWith("HashupCreatorship: caller is not creator");
+		});
 		it("should revert if transferring to zero address", async () => {
-			await expect(hashupCartridge.transferCreatorship(ethers.constants.AddressZero)).to.be.revertedWith("HashupCreatorship: cannot set creator to zero address");
-		})
+			await expect(
+				hashupCartridge.transferCreatorship(
+					ethers.constants.AddressZero
+				)
+			).to.be.revertedWith(
+				"HashupCreatorship: cannot set creator to zero address"
+			);
+		});
 	});
 	describe("setMetadata()", async () => {
 		it("should set metadata", async () => {
 			await hashupCartridge.setMetadata("new");
 			expect(await hashupCartridge.metadataUrl()).to.be.equal("new");
-		})
+		});
 		it("should revert if not creator", async () => {
-			await expect(hashupCartridge.connect(userTwo).setMetadata("new")).to.be.revertedWith("");
-		})
+			await expect(
+				hashupCartridge.connect(userTwo).setMetadata("new")
+			).to.be.revertedWith("");
+		});
 	});
 	describe("transfer()", async () => {
 		it("should revert if recipient is zero address", async () => {
@@ -231,7 +283,9 @@ describe("HashupCartridge", async () => {
 			).to.be.reverted;
 		});
 		it("should pay fees properly", async () => {
-			await hashupCartridge.connect(owner).transfer(userOne.address, 100);
+			await hashupCartridge
+				.connect(owner)
+				.transfer(userOne.address, 100);
 			expect(
 				await hashupCartridge.balanceOf(userOne.address)
 			).to.be.equal(100);
