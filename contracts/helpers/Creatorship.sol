@@ -4,7 +4,6 @@
 pragma solidity ^0.8.0;
 
 abstract contract Creatorship {
-    
 	// Address of creator
 	address private _creator;
 

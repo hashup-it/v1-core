@@ -4,7 +4,6 @@
 pragma solidity ^0.8;
 
 import "./helpers/CartridgeMetadata.sol";
-import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract HashupCartridge is IERC20, CartridgeMetadata {
@@ -97,7 +96,10 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 	}
 
 	function switchSale() public {
-		require(msg.sender == creator(), "HashupCartridge: only admin can enable transferFrom");
+		require(
+			msg.sender == creator(),
+			"HashupCartridge: only admin can enable transferFrom"
+		);
 		_isOpen = true;
 	}
 
@@ -151,9 +153,12 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 			from != address(0),
 			"HashupCartridge: transfer from the zero address"
 		);
-		
-		if(!_isOpen) {
-			require(from == creator() || from == _store, "HashupCartridge: transferFrom is closed");
+
+		if (!_isOpen) {
+			require(
+				from == creator() || from == _store,
+				"HashupCartridge: transferFrom is closed"
+			);
 		}
 
 		_spendAllowance(from, msg.sender, value);
@@ -162,6 +167,10 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		return true;
 	}
 
+	/**
+	 * @dev Internal transfer from to remove redundance on transfer
+	 * and transferFrom
+	 */
 	function _transferFrom(
 		address _from,
 		address _to,
