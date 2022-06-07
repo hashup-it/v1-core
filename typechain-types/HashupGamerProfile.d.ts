@@ -21,29 +21,34 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface HashupGamerProfileInterface extends ethers.utils.Interface {
   functions: {
-    "creator()": FunctionFragment;
     "gotReward(address)": FunctionFragment;
     "nicknameOwners(string)": FunctionFragment;
+    "owner()": FunctionFragment;
     "pointsEarned(address)": FunctionFragment;
     "profiles(address)": FunctionFragment;
-    "transferCreatorship(address)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
     "updateProfile(string,string,string,string,string,address)": FunctionFragment;
     "verifyProfile(address,bool)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "creator", values?: undefined): string;
   encodeFunctionData(functionFragment: "gotReward", values: [string]): string;
   encodeFunctionData(
     functionFragment: "nicknameOwners",
     values: [string]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pointsEarned",
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "profiles", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "transferCreatorship",
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -55,19 +60,23 @@ interface HashupGamerProfileInterface extends ethers.utils.Interface {
     values: [string, boolean]
   ): string;
 
-  decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "gotReward", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nicknameOwners",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pointsEarned",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "profiles", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "transferCreatorship",
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -154,11 +163,11 @@ export class HashupGamerProfile extends BaseContract {
   interface: HashupGamerProfileInterface;
 
   functions: {
-    creator(overrides?: CallOverrides): Promise<[string]>;
-
     gotReward(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
     nicknameOwners(arg0: string, overrides?: CallOverrides): Promise<[string]>;
+
+    owner(overrides?: CallOverrides): Promise<[string]>;
 
     pointsEarned(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -176,8 +185,12 @@ export class HashupGamerProfile extends BaseContract {
       }
     >;
 
-    transferCreatorship(
-      newCreator: string,
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    transferOwnership(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -198,11 +211,11 @@ export class HashupGamerProfile extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  creator(overrides?: CallOverrides): Promise<string>;
-
   gotReward(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
   nicknameOwners(arg0: string, overrides?: CallOverrides): Promise<string>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
 
   pointsEarned(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -220,8 +233,12 @@ export class HashupGamerProfile extends BaseContract {
     }
   >;
 
-  transferCreatorship(
-    newCreator: string,
+  renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  transferOwnership(
+    newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -242,11 +259,11 @@ export class HashupGamerProfile extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    creator(overrides?: CallOverrides): Promise<string>;
-
     gotReward(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
     nicknameOwners(arg0: string, overrides?: CallOverrides): Promise<string>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
 
     pointsEarned(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -264,8 +281,10 @@ export class HashupGamerProfile extends BaseContract {
       }
     >;
 
-    transferCreatorship(
-      newCreator: string,
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    transferOwnership(
+      newOwner: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -357,18 +376,22 @@ export class HashupGamerProfile extends BaseContract {
   };
 
   estimateGas: {
-    creator(overrides?: CallOverrides): Promise<BigNumber>;
-
     gotReward(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     nicknameOwners(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     pointsEarned(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     profiles(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    transferCreatorship(
-      newCreator: string,
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -390,8 +413,6 @@ export class HashupGamerProfile extends BaseContract {
   };
 
   populateTransaction: {
-    creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     gotReward(
       arg0: string,
       overrides?: CallOverrides
@@ -401,6 +422,8 @@ export class HashupGamerProfile extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pointsEarned(
       arg0: string,
@@ -412,8 +435,12 @@ export class HashupGamerProfile extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    transferCreatorship(
-      newCreator: string,
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -24,7 +24,7 @@ describe("HashupGamerProfile", async () => {
 
 	describe("initialization", async () => {
 		it("should set creator to deployer", async () => {
-			const creator = await hashupGamerProfile.creator();
+			const creator = await hashupGamerProfile.owner();
 			expect(creator).to.be.equal(owner.address);
 		});
 		it("should set users unverified", async () => {
@@ -53,7 +53,7 @@ describe("HashupGamerProfile", async () => {
 				hashupGamerProfile
 					.connect(userOne)
 					.verifyProfile(userOne.address, true)
-			).to.be.revertedWith("HashupCreatorship: caller is not creator");
+			).to.be.revertedWith("Ownable: caller is not the owner");
 		});
 	});
 

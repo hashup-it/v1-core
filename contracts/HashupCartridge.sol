@@ -1,23 +1,20 @@
 // SPDX-License-Identifier: MIT
 // HashUp Contracts V1
-
 pragma solidity ^0.8;
 
 import "./helpers/CartridgeMetadata.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract HashupCartridge is IERC20, CartridgeMetadata {
-	// Fee to creator when transferring
+
+	// Fee to creator on transfer
 	uint256 public _creatorFee;
 
-	// Amount gathered from fees
-	uint256 public feesCounter;
+	// Amount of Cartridges gathered from fees
+	uint256 private _feeCounter;
 
-	// Available decimal places for fee
-	uint8 public constant feeDecimals = 1;
-
-	// Hashup Store contract address
-	address public _store;
+	// HashUp Store contract address
+	address private _store;
 
 	// Mapping address to Cartridge balance
 	mapping(address => uint256) private _balances;
@@ -40,7 +37,7 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		address store_
 	) CartridgeMetadata(name_, symbol_, metadataUrl_, totalSupply_) {
 		require(
-			creatorFee_ < 100 * 10**feeDecimals,
+			creatorFee_ < 100 * 10**feeDecimals(),
 			"HashupCartridge: Incorrect fee"
 		);
 		_balances[msg.sender] = totalSupply_;
@@ -67,12 +64,24 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		return _creatorFee;
 	}
 
+	function feeCounter() public view returns (uint256) {
+		return _feeCounter;
+	}
+
+	function feeDecimals() public pure returns (uint8) {
+		return 1;
+	}
+
 	function store() public view returns (address) {
 		return _store;
 	}
 
-	function setStore(address newStore) public onlyCreator {
+	function setStore(address newStore) public onlyOwner {
 		_store = newStore;
+	}
+
+	function isOpen() public view returns (bool) {
+		return _isOpen;
 	}
 
 	/// @inheritdoc IERC20
@@ -97,7 +106,7 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 
 	function switchSale() public {
 		require(
-			msg.sender == creator(),
+			msg.sender == owner(),
 			"HashupCartridge: only admin can enable transferFrom"
 		);
 		_isOpen = true;
@@ -118,7 +127,7 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		view
 		returns (uint256 recipientPart, uint256 creatorPart)
 	{
-		if (sender == _store || sender == creator()) {
+		if (sender == _store || sender == owner()) {
 			return (value, 0);
 		}
 		uint256 fee = (value * _creatorFee) / 1000;
@@ -156,7 +165,7 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 
 		if (!_isOpen) {
 			require(
-				from == creator() || from == _store,
+				from == owner() || from == _store,
 				"HashupCartridge: transferFrom is closed"
 			);
 		}
@@ -194,8 +203,8 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		_balances[_from] -= _value;
 		_balances[_to] += recipientPart;
 
-		_balances[creator()] += creatorPart;
-		feesCounter += creatorPart;
+		_balances[owner()] += creatorPart;
+		_feeCounter += creatorPart;
 
 		emit Transfer(_from, _to, _value);
 	}

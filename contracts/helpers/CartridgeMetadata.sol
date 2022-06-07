@@ -2,20 +2,17 @@
 // HashUp Contracts V1
 pragma solidity ^0.8.0;
 
-import "./Creatorship.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @dev HashUp implementation of ERC20 Metadata that suits HashupCartridge.
  */
-contract CartridgeMetadata is Creatorship {
+contract CartridgeMetadata is Ownable {
 	// Cartridge name
 	string private _name;
 
 	// Cartridge symbol
 	string private _symbol;
-
-	// Cartridge decimals
-	uint8 private constant _decimals = 2;
 
 	// Cartridge color
 	string private _color;
@@ -48,7 +45,7 @@ contract CartridgeMetadata is Creatorship {
 	 * Requirements:
 	 * - the caller must be creator
 	 */
-	function setMetadata(string memory newMetadata) public onlyCreator {
+	function setMetadata(string memory newMetadata) public onlyOwner {
 		_metadataUrl = newMetadata;
 	}
 
@@ -56,8 +53,8 @@ contract CartridgeMetadata is Creatorship {
 	 * NOTE: ERC20 Tokens usually use 18 decimal places but our
 	 * CEO said it's stupid and we should use 2 decimals
 	 */
-	function decimals() public view returns (uint8) {
-		return _decimals;
+	function decimals() public pure returns (uint8) {
+		return 2;
 	}
 
 	/**
@@ -104,9 +101,9 @@ contract CartridgeMetadata is Creatorship {
 		pure
 		returns (string memory color)
 	{
-		if (supply <= 133_700 * 10**_decimals) {
+		if (supply <= 133_700 * 10**decimals()) {
 			return "gold";
-		} else if (supply <= 100_000_000 * 10**_decimals) {
+		} else if (supply <= 100_000_000 * 10**decimals()) {
 			return "gray";
 		}
 		return "custom";

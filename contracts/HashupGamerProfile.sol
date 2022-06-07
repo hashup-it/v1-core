@@ -2,14 +2,14 @@
 // HashUp Contracts V1
 pragma solidity ^0.8;
 
-import "./helpers/Creatorship.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @dev HashUp profile Contract, used for managing profiles,
  * in future we want to use it to sending ERC20 Cartridges
  * providing only friend name and more
  */
-contract HashupGamerProfile is Creatorship {
+contract HashupGamerProfile is Ownable {
 	// Size of reward for registration
 	uint256 constant reward = 10;
 
@@ -104,7 +104,7 @@ contract HashupGamerProfile is Creatorship {
 	 * Requirements:
 	 * - the caller must be creator
 	 */
-	function verifyProfile(address user, bool value) public onlyCreator {
+	function verifyProfile(address user, bool value) public onlyOwner {
 		profiles[user].isVerified = value;
 		emit VerifiedUser(user, value);
 	}

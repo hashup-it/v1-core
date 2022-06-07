@@ -2,15 +2,14 @@
 // HashUp Contracts V1
 pragma solidity ^0.8;
 
-import "hardhat/console.sol";
 import "./HashupCartridge.sol";
-import "./helpers/Creatorship.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @dev HashUp smart contract for selling games
  */
-contract HashupStore is Creatorship {
+contract HashupStore is Ownable {
 	// Percent of profits for referrer
 	uint256 public constant reflinkFee = 5;
 
@@ -61,7 +60,7 @@ contract HashupStore is Creatorship {
 	 */
 	modifier onlyCartridgeCreator(address _cartridgeAddress) {
 		require(
-			msg.sender == HashupCartridge(_cartridgeAddress).creator(),
+			msg.sender == HashupCartridge(_cartridgeAddress).owner(),
 			"HashupStore: must be Cartridge creator."
 		);
 		_;
@@ -81,6 +80,7 @@ contract HashupStore is Creatorship {
 		uint256 price,
 		uint256 amount
 	) public onlyCartridgeCreator(cartridgeAddress) {
+		require(price != 0, "HashupStore: price cant be 0");
 		require(
 			cartridgePrices[cartridgeAddress] == 0,
 			"HashupStore: Can't set for sale second time"
@@ -197,12 +197,12 @@ contract HashupStore is Creatorship {
 		cartridge.transfer(msg.sender, amount);
 
 		// Send payment token to creator
-		paymentToken.transferFrom(msg.sender, cartridge.creator(), toCreator);
+		paymentToken.transferFrom(msg.sender, cartridge.owner(), toCreator);
 
 		// Send platform + refferer part to itself, because no referrer
 		paymentToken.transferFrom(
 			msg.sender,
-			creator(),
+			owner(),
 			toPlatform + toReferrer
 		);
 
@@ -236,13 +236,13 @@ contract HashupStore is Creatorship {
 		cartridge.transfer(msg.sender, amount);
 
 		// Send payment token to creator
-		paymentToken.transferFrom(msg.sender, cartridge.creator(), toCreator);
+		paymentToken.transferFrom(msg.sender, cartridge.owner(), toCreator);
 
 		// Send refferal part to referrer
 		paymentToken.transferFrom(msg.sender, referrer, toReferrer);
 
 		// Send rest to platform
-		paymentToken.transferFrom(msg.sender, creator(), toPlatform);
+		paymentToken.transferFrom(msg.sender, owner(), toPlatform);
 
 		// Increase raised and reflink amount count
 		raisedAmount[cartridgeAddress] += toCreator;

@@ -66,7 +66,7 @@ describe("HashupStore", async () => {
 
 	describe("constructor()", async () => {
 		it("should set creator properly", async () => {
-			expect(await hashupStore.creator()).to.be.equal(owner.address);
+			expect(await hashupStore.owner()).to.be.equal(owner.address);
 		});
 		it("should set payment token properly", async () => {
 			expect(await hashupStore.paymentToken()).to.be.equal(
@@ -144,6 +144,29 @@ describe("HashupStore", async () => {
 			);
 		});
 	});
+	describe("setCartridgePrice()", async () => {
+		it("should revert if setting price to 0", async () => {
+			await expect(
+				hashupStore
+					.connect(developer)
+					.setCartridgePrice(hashupCartridge.address, 0)
+			).to.be.revertedWith("HashupStore: new price cant be 0");
+		});
+		it("should revert if not creator", async () => {
+			await expect(
+				hashupStore
+					.connect(userTwo)
+					.setCartridgePrice(hashupCartridge.address, 0)
+			).to.be.revertedWith("HashupStore: must be Cartridge creator.");
+		});
+		it("should set new price correctly", async () => {
+			await hashupStore
+				.connect(developer)
+				.setCartridgePrice(hashupCartridge.address, 444);
+
+			expect(await hashupStore.getCartridgePrice(hashupCartridge.address)).to.be.equal(444);
+		});
+	});
 	describe("sendCartridgeToStore()", async () => {
 		it("should revert if not allowed", async () => {
 			await expect(
@@ -151,6 +174,13 @@ describe("HashupStore", async () => {
 					.connect(developer)
 					.sendCartridgeToStore(hashupCartridge.address, 100, 200)
 			).to.be.revertedWith("HashupCartridge: insufficient allowance");
+		});
+		it("should revert if setting price to 0", async () => {
+			await expect(
+				hashupStore
+					.connect(developer)
+					.sendCartridgeToStore(hashupCartridge.address, 0, 200)
+			).to.be.revertedWith("HashupStore: price cant be 0");
 		});
 		it("should should set price correctly and take cartridges", async () => {
 			await hashupCartridge
@@ -182,12 +212,12 @@ describe("HashupStore", async () => {
 				hashupStore
 					.connect(developer)
 					.sendCartridgeToStore(hashupCartridge.address, 100, 200)
-			).to.be.revertedWith("HashupStore: Can't set for sale second time");
+			).to.be.revertedWith(
+				"HashupStore: Can't set for sale second time"
+			);
 		});
 	});
-	describe("setCartridgePrice()", async () => {
-
-	})
+	describe("setCartridgePrice()", async () => {});
 	describe("buyCartridge()", async () => {
 		const amountBought = 100;
 		const price = 100;
