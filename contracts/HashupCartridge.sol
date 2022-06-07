@@ -5,8 +5,12 @@ pragma solidity ^0.8;
 import "./helpers/CartridgeMetadata.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+/**
+ * @dev HashUp profile Contract, used for managing profiles,
+ * in future we want to use it to sending ERC20 Cartridges
+ * providing only friend name and more
+ */
 contract HashupCartridge is IERC20, CartridgeMetadata {
-
 	// Fee to creator on transfer
 	uint256 public _creatorFee;
 
@@ -22,10 +26,10 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 	// Mapping address to mapping of allowances
 	mapping(address => mapping(address => uint256)) private _allowed;
 
-	// Cartridge total supply
+	// Total amount of Cartridges
 	uint256 private _totalSupply;
 
-	// Block transferFrom
+	// Whether {transferFrom} is available for users
 	bool private _isOpen;
 
 	constructor(
@@ -46,7 +50,9 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		_store = store_;
 	}
 
-	/// @inheritdoc IERC20
+	/**
+	 * @dev See {IERC20-balanceOf}.
+	 */
 	function balanceOf(address owner)
 		public
 		view
@@ -56,35 +62,69 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		return _balances[owner];
 	}
 
+	/**
+	 * @dev See {IERC20-totalSupply}.
+	 */
 	function totalSupply() public view override returns (uint256) {
 		return _totalSupply;
 	}
 
+	/**
+	 * @dev Returns percentage of amount that goes to the
+	 * creator when transferring Cartridges
+	 */
 	function creatorFee() public view returns (uint256) {
 		return _creatorFee;
 	}
 
+	/**
+	 * @dev Returns sum of of Cartridges gathered
+	 * by creator via transfer fees
+	 */
 	function feeCounter() public view returns (uint256) {
 		return _feeCounter;
 	}
 
+	/**
+	 * @dev Amount of decimals in fee number, its 1 so
+	 * for example 5 is 0.5%  and 50 is 5%
+	 */
 	function feeDecimals() public pure returns (uint8) {
 		return 1;
 	}
 
+	/**
+	 * @dev Address of HashUp store that cartridge will
+	 * be listed on. We save it here so interaction with
+	 * store (for example sending games to it) doesn't
+	 * take any fees
+	 */
 	function store() public view returns (address) {
 		return _store;
 	}
 
+	/**
+	 * @dev Address of HashUp store that cartridge will
+	 * be listed on. We save it here so interaction with
+	 * store (for example sending games to it) doesn't
+	 * take any fees
+	 */
 	function setStore(address newStore) public onlyOwner {
 		_store = newStore;
 	}
 
+	/**
+	 * @dev Stores whether transferFrom is blocked,
+	 * it can be unlocked by admin to enable it for
+	 * usage in other smart contracts for example DEX
+	 */
 	function isOpen() public view returns (bool) {
 		return _isOpen;
 	}
 
-	/// @inheritdoc IERC20
+	/**
+	 * @dev See {IERC20-allowance}.
+	 */
 	function allowance(address owner, address spender)
 		public
 		view
@@ -94,7 +134,29 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		return _allowed[owner][spender];
 	}
 
-	/// @inheritdoc IERC20
+	/**
+	 * @dev Sets `_isOpen` to true and enables transferFrom
+	 *
+	 * Requirements:
+	 * - sender must be admin
+	 */
+	function switchSale() public {
+		require(
+			msg.sender == owner(),
+			"HashupCartridge: only admin can enable transferFrom"
+		);
+		_isOpen = true;
+	}
+
+	/**
+	 * @dev See {IERC20-approve}.
+	 *
+	 * NOTE: If `amount` is the maximum `uint256`, the allowance is not updated on
+	 * `transferFrom`. This is semantically equivalent to an infinite approval.
+	 *
+	 * Requirements:
+	 * - `spender` cannot be the zero address.
+	 */
 	function approve(address spender, uint256 value)
 		public
 		override
@@ -104,24 +166,32 @@ contract HashupCartridge is IERC20, CartridgeMetadata {
 		return true;
 	}
 
-	function switchSale() public {
-		require(
-			msg.sender == owner(),
-			"HashupCartridge: only admin can enable transferFrom"
-		);
-		_isOpen = true;
-	}
-
-	/// @dev ERC20
+	/**
+	 * @dev See {IERC20-approve}.
+	 */
 	function _approve(
 		address owner,
 		address spender,
 		uint256 value
 	) internal {
+		require(
+			owner != address(0),
+			"HashupCartridge: approve from the zero address"
+		);
+		require(
+			spender != address(0),
+			"HashupCartridge: approve to the zero address"
+		);
 		_allowed[owner][spender] = value;
 		emit Approval(owner, spender, value);
 	}
 
+	/**
+	 * @dev Splits value between recipient and Cartridge creator
+	 *
+	 * NOTE: If sender is store or owner it doesn't count
+	 * creator fee and gives everything to recipient
+	 **/
 	function calculateFee(uint256 value, address sender)
 		public
 		view
